@@ -1,8 +1,23 @@
-import 'package:expenses_manager/ui/root.dart';
+import 'package:expenses_manager/di/dependendy_injection.dart';
+import 'package:expenses_manager/presentation/home/bloc/home_bloc.dart';
+import 'package:expenses_manager/presentation/transactions/bloc/transaction_bloc.dart';
+import 'package:expenses_manager/presentation/transactions/ui/transactions_screen.dart';
+import 'package:expenses_manager/presentation/root.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  await initGetIt();
+
+  runApp(
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => getIt<HomeBloc>()),
+        BlocProvider(create: (context) => getIt<TransactionBloc>())
+      ], 
+      child: MyApp()
+    )
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -17,7 +32,8 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       routes: {
-        'root': (context) => Root()
+        'root': (context) => Root(),
+        'movements': (context) => TransactionsScreen()
       },
       initialRoute: 'root'
     );
