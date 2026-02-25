@@ -23,7 +23,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
       appBar: AppBar(
         title: Text('Your transactions'),
       ),
-      floatingActionButton: FloatingActionButton(onPressed: () {}, child: Icon(Icons.add)),
+      floatingActionButton: FloatingActionButton(onPressed: () {Navigator.pushNamed(context, 'create_transaction');}, child: Icon(Icons.add)),
       body: BlocBuilder<TransactionBloc, TransactionState>(
         builder: (context, state) {
           final status = <UIStatus, Widget>{
@@ -39,22 +39,17 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                   child: ListView.builder(
                     itemCount: state.transactionList.length,
                     itemBuilder: (context, index) {
-                      return Container(
-                        margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                        padding: EdgeInsets.all(15),
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(110, 185, 155, 255),
-                          borderRadius: BorderRadius.all(Radius.circular(15))
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Icon(Icons.food_bank, size: 50,),
-                            Text(state.transactionList[index].category.name, style: TextStyle(fontSize: 20)),
-                            Text("${state.transactionList[index].type == TransactionType.income ? '+' : '-'}${state.transactionList[index].quantity}€", style: TextStyle(fontSize: 30))
-                          ],
-                        ),
+                      final date = state.transactionList.keys.elementAt(index);
+                      final dayTransactions = state.transactionList[date]!;
+
+                      return Column(
+                        children: [
+                          _DateCard(date: date),
+                          
+                          ...dayTransactions.map((transaction) {
+                            return _TransactionCard(transaction: transaction,);
+                          }).toList(),
+                                    ],
                       );
                     }
                   ),
@@ -65,6 +60,65 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
           return status[state.uiState.status] ?? Container();
         },
       )
+    );
+  }
+}
+
+class _TransactionCard extends StatelessWidget {
+  final TransactionModel transaction;
+
+  const _TransactionCard({
+    required this.transaction
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      padding: EdgeInsets.all(15),
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(110, 185, 155, 255),
+        borderRadius: BorderRadius.all(Radius.circular(15))
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Icon(transaction.category.icon, size: 50),
+          Text(
+            transaction.category.name, 
+            style: TextStyle(fontSize: 20)
+          ),
+          Text(
+            "${transaction.type == TransactionType.income ? '+' : '-'}${transaction.quantity}€", 
+            style: TextStyle(fontSize: 30)
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class _DateCard extends StatelessWidget {
+  const _DateCard({
+    required this.date,
+  });
+
+  final DateTime date;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      color: Colors.grey.shade200,
+      width: double.infinity,
+      child: Text(
+        _formatDate(date),
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
     );
   }
 }
@@ -99,5 +153,27 @@ class _FilterContainer extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+
+String _formatDate(DateTime date) {
+  final now = DateTime.now();
+  final today = DateTime(now.year, now.month, now.day);
+  final yesterday = DateTime(now.year, now.month, now.day - 1);
+  
+  if (date == today) {
+    return 'Hoy';
+  } else if (date == yesterday) {
+    return 'Ayer';
+  } else {
+    // Formato: "lunes, 25 de febrero"
+    final weekdays = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'];
+    final months = [
+      'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+      'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
+    ];
+    
+    return '${weekdays[date.weekday - 1]}, ${date.day} de ${months[date.month - 1]}';
   }
 }

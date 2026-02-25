@@ -11,7 +11,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   final GetMonthTransactionsUsecase getMonthTransactionsUsecase;
 
   TransactionBloc(this.getMonthTransactionsUsecase)
-    : super(TransactionState(uiState: UIState.idle(), transactionList: [])) {
+    : super(TransactionState(uiState: UIState.idle(), transactionList: {})) {
     on<TransactionEvent>((event, emit) {
       // TODO: implement event handler
     });
@@ -29,6 +29,5 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         ),
       );
     });
-
   }
 }

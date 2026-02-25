@@ -2,7 +2,7 @@ part of 'transaction_bloc.dart';
 
 class TransactionState extends Equatable {
   final UIState uiState;
-  final List<TransactionModel> transactionList;
+  final Map<DateTime, List<TransactionModel>> transactionList;
 
   const TransactionState({
     required this.uiState,
@@ -11,7 +11,7 @@ class TransactionState extends Equatable {
 
   TransactionState copyWith({
     UIState? uiState,
-    List<TransactionModel>? transactionList,
+    Map<DateTime, List<TransactionModel>>? transactionList,
   }) => TransactionState(
     uiState: uiState ?? this.uiState,
     transactionList: transactionList ?? this.transactionList,

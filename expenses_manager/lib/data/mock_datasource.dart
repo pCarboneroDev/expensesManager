@@ -4,26 +4,31 @@ import 'package:dartz/dartz.dart';
 import 'package:expenses_manager/domain/exceptions/failure.dart';
 import 'package:expenses_manager/domain/models/category_model.dart';
 import 'package:expenses_manager/domain/models/movement_model.dart';
+import 'package:flutter/material.dart';
 
 class MockDatasource {
-  List<CategoryModel> getAllCategories() {
-    final List<CategoryModel> categories = [
-      CategoryModel(id: 0, name: 'Food'),
-      CategoryModel(id: 1, name: 'Transport'),
-      CategoryModel(id: 2, name: 'Entertainment'),
-      CategoryModel(id: 3, name: 'Health'),
-      CategoryModel(id: 4, name: 'Shopping'),
-      CategoryModel(id: 5, name: 'Education'),
-      CategoryModel(id: 6, name: 'Bills'),
-      CategoryModel(id: 7, name: 'Travel'),
-    ];
+  Either<Failure, List<CategoryModel>> getAllCategories() {
+    try {
+      final List<CategoryModel> categories = [
+        CategoryModel(id: 1, name: 'Alimentación', icon: Icons.restaurant),
+        CategoryModel(id: 2, name: 'Transporte', icon: Icons.directions_car),
+        CategoryModel(id: 3, name: 'Entretenimiento', icon: Icons.movie),
+        CategoryModel(id: 4, name: 'Salud', icon: Icons.favorite),
+        CategoryModel(id: 5, name: 'Educación', icon: Icons.school),
+        CategoryModel(id: 6, name: 'Salario', icon: Icons.work),
+        CategoryModel(id: 7, name: 'Inversiones', icon: Icons.trending_up),
+      ];
 
-    return categories;
+      return Right(categories);
+    } catch (error) {
+      return Left(DataSourceException(e.toString()));
+    }
   }
 
   Either<Failure, List<TransactionModel>> getAllMovements() {
     try {
-      final categories = getAllCategories();
+      final categories = _getAllCategories();
+
       final List<TransactionModel> movements = [
         TransactionModel(
           id: 0,
@@ -106,5 +111,19 @@ class MockDatasource {
     final rng = Random();
     final index = rng.nextInt(categories.length);
     return categories[index];
+  }
+
+  List<CategoryModel> _getAllCategories() {
+    final List<CategoryModel> categories = [
+      CategoryModel(id: 1, name: 'Alimentación', icon: Icons.restaurant),
+      CategoryModel(id: 2, name: 'Transporte', icon: Icons.directions_car),
+      CategoryModel(id: 3, name: 'Entretenimiento', icon: Icons.movie),
+      CategoryModel(id: 4, name: 'Salud', icon: Icons.favorite),
+      CategoryModel(id: 5, name: 'Educación', icon: Icons.school),
+      CategoryModel(id: 6, name: 'Salario', icon: Icons.work),
+      CategoryModel(id: 7, name: 'Inversiones', icon: Icons.trending_up),
+    ];
+
+    return categories;
   }
 }

@@ -39,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () { Navigator.pushNamed(context, 'create_transaction'); },
         child: Icon(Icons.add),
       ),
       body: BlocBuilder<HomeBloc, HomeState>(

@@ -20,8 +20,8 @@ class _RootState extends State<Root> {
     // LO DIGO POR ESTO: https://stackoverflow.com/questions/64618050/is-it-correct-to-have-nested-scaffold-in-flutter
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: ColorScheme.of(context).onSurface,
-        unselectedItemColor: ColorScheme.of(context).primary,
+        // selectedItemColor: ColorScheme.of(context).onSurface,
+        // unselectedItemColor: ColorScheme.of(context).primary,
 
         onTap: (value) {
           setState(() {
