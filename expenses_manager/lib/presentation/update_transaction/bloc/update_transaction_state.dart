@@ -4,7 +4,7 @@ class UpdateTransactionState extends Equatable {
   final UIState uiState;
   final TransactionModel newTransaction;
 
-  final double quantity;
+  final double amount;
   final DateTime date;
   final CategoryModel category;
   final TransactionType type;
@@ -15,7 +15,7 @@ class UpdateTransactionState extends Equatable {
   const UpdateTransactionState({
     required this.uiState,
     required this.newTransaction,
-    required this.quantity,
+    required this.amount,
     required this.date,
     required this.category,
     required this.type,
@@ -27,7 +27,7 @@ class UpdateTransactionState extends Equatable {
     {UIState? uiState,
     TransactionModel? newTransaction,
 
-    double? quantity,
+    double? amount,
     DateTime? date,
     CategoryModel? category,
     TransactionType? type,
@@ -37,7 +37,7 @@ class UpdateTransactionState extends Equatable {
   ) => UpdateTransactionState(
     uiState: uiState ?? this.uiState,
     newTransaction: newTransaction ?? this.newTransaction,
-    quantity: quantity ?? this.quantity,
+    amount: amount ?? this.amount,
     date: date ?? this.date,
     category: category ?? this.category,
     type: type ?? this.type,
@@ -46,5 +46,5 @@ class UpdateTransactionState extends Equatable {
   );
 
   @override
-  List<Object> get props => [uiState, newTransaction, quantity, date, category, type, transactionId];
+  List<Object> get props => [uiState, newTransaction, amount, date, category, type, transactionId];
 }

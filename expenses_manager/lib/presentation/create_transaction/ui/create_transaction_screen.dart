@@ -16,10 +16,29 @@ class CreateTransactionScreen extends StatefulWidget {
 }
 
 class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
+  late final TextEditingController amountController;
+
   @override
   void initState() {
     super.initState();
     BlocProvider.of<CreateTransactionBloc>(context).add(LoadCategories());
+    amountController = TextEditingController();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final state = context.watch<CreateTransactionBloc>().state;
+    _updateControllerFromState(state);
+  }
+
+  void _updateControllerFromState(CreateTransactionState state) {
+    final currentText = amountController.text;
+    final expectedText = state.amount > 0 ? state.amount.toString() : '';
+
+    if (currentText != expectedText && !(FocusScope.of(context).hasFocus)) {
+      amountController.text = expectedText;
+    }
   }
 
   void updateDate(DateTime date) {
@@ -40,18 +59,17 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
     ).add(UpdateTransactionType(type));
   }
 
-  void updateAmount(double amount){
+  void updateAmount(double amount) {
     BlocProvider.of<CreateTransactionBloc>(
       context,
-    ).add(UpdateTransactionQuantity(amount));
+    ).add(UpdateTransactionAmount(amount));
   }
 
-  void createTransaction(TransactionModel transaction){
+  void createTransaction(TransactionModel transaction) {
     BlocProvider.of<CreateTransactionBloc>(
       context,
     ).add(CreateTransaction(transaction));
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +112,8 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
               selectedType: state.type,
               selectedDate: state.date,
               selectedCategory: state.category,
-              quantity: state.quantity,
+              quantity: state.amount,
+              amountController: amountController,
 
               updateDate: updateDate,
               updateCategory: updateCategory,

@@ -2,7 +2,7 @@ import 'package:expenses_manager/domain/models/category_model.dart';
 import 'package:expenses_manager/domain/models/movement_model.dart';
 import 'package:expenses_manager/presentation/create_transaction/ui/widgets/category_selector.dart';
 import 'package:expenses_manager/presentation/create_transaction/ui/widgets/date_card.dart';
-import 'package:expenses_manager/presentation/create_transaction/ui/widgets/quantity_field.dart';
+import 'package:expenses_manager/presentation/create_transaction/ui/widgets/amount_field.dart';
 import 'package:expenses_manager/presentation/create_transaction/ui/widgets/type_selector.dart';
 import 'package:expenses_manager/utils/transaction_type.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +13,7 @@ class CreateTransactionForm extends StatelessWidget {
   final DateTime selectedDate;
   final CategoryModel? selectedCategory;
   final double quantity;
+  final TextEditingController amountController;
 
   final void Function(DateTime) updateDate;
   final void Function(CategoryModel) updateCategory;
@@ -31,12 +32,12 @@ class CreateTransactionForm extends StatelessWidget {
     required this.updateCategory,
     required this.updateType,
     required this.create, 
-    required this.updateAmount,
+    required this.updateAmount, required this.amountController
   });
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController amountController = TextEditingController(text: (quantity > 0) ? quantity.toString() : null);
+    amountController.text = (quantity > 0) ? quantity.toString() : '';
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
@@ -45,7 +46,7 @@ class CreateTransactionForm extends StatelessWidget {
         children: [
           TypeSelector(selectedType: selectedType, updateType: updateType),
           const SizedBox(height: 20),
-          QuantityField(controller: amountController, updateAmount: updateAmount),
+          AmountField(controller: amountController, updateAmount: updateAmount),
           const SizedBox(height: 20),
           DateCard(selectedDate: selectedDate, updateDate: updateDate),
           const SizedBox(height: 20),

@@ -18,18 +18,31 @@ class UpdateTransactionScreen extends StatefulWidget {
 class _UpdateTransactionScreenState extends State<UpdateTransactionScreen> {
   TransactionModel? transaction;
   bool _categoriesLoaded = false;
+  late final TextEditingController amountController;
 
   @override
   void initState() {
     super.initState();
     final bloc = BlocProvider.of<UpdateTransactionBloc>(context);
     bloc.add(LoadCategories());
+    amountController = TextEditingController();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     transaction = ModalRoute.of(context)!.settings.arguments as TransactionModel;
+    final state = context.watch<UpdateTransactionBloc>().state;
+    _updateControllerFromState(state);
+  }
+
+  void _updateControllerFromState(UpdateTransactionState state) {
+    final currentText = amountController.text;
+    final expectedText = state.amount > 0 ? state.amount.toString() : '';
+
+    if (currentText != expectedText && !(FocusScope.of(context).hasFocus)) {
+      amountController.text = expectedText;
+    }
   }
 
   void updateDate(DateTime date) {
@@ -120,7 +133,8 @@ class _UpdateTransactionScreenState extends State<UpdateTransactionScreen> {
                 selectedType: state.type,
                 selectedDate: state.date,
                 selectedCategory: state.category,
-                quantity: state.quantity,
+                quantity: state.amount,
+              amountController: amountController,
 
                 updateDate: updateDate,
                 updateCategory: updateCategory,

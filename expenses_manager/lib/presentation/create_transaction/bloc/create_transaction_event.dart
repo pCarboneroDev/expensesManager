@@ -14,9 +14,9 @@ class UpdateTransactionType extends CreateTransactionEvent {
   UpdateTransactionType(this.type);
 }
 
-class UpdateTransactionQuantity extends CreateTransactionEvent {
-  final double quantity;
-  UpdateTransactionQuantity(this.quantity);
+class UpdateTransactionAmount extends CreateTransactionEvent {
+  final double amount;
+  UpdateTransactionAmount(this.amount);
 }
 
 class UpdateTransactionDate extends CreateTransactionEvent {

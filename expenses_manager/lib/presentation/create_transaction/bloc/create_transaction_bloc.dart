@@ -20,7 +20,7 @@ class CreateTransactionBloc extends Bloc<CreateTransactionEvent, CreateTransacti
         CreateTransactionState(
           uiState: UIState.idle(),
           newTransaction: TransactionModel.empty(),
-          quantity: 0,
+          amount: 0,
           date: DateTime.now(),
           category: CategoryModel(id: 0, name: "", icon: Icons.restaurant),
           type: TransactionType.expense,
@@ -54,8 +54,8 @@ class CreateTransactionBloc extends Bloc<CreateTransactionEvent, CreateTransacti
       emit(state.copyWith(category: event.category));
     });
 
-    on<UpdateTransactionQuantity>((event, emit) async {
-      emit(state.copyWith(quantity: event.quantity));
+    on<UpdateTransactionAmount>((event, emit) async {
+      emit(state.copyWith(amount: event.amount));
     });
 
     on<CreateTransaction>((event, emit) async {

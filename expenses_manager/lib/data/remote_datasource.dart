@@ -31,7 +31,7 @@ class RemoteDatasource {
       if (response.statusCode == 200) {
         final categories = decodedJson
             .map((item) => CategoryEntity.fromMap(item).toModel())
-            .toList(); //"type 'List<dynamic>' is not a subtype of type 'List<CategoryModel>'"
+            .toList();
         return Right(categories);
       } else {
         return Left(DataSourceException(response.statusMessage.toString()));

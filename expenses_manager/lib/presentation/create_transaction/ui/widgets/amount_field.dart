@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 
-class QuantityField extends StatelessWidget {
+class AmountField extends StatelessWidget {
   final TextEditingController controller;
   final void Function(double) updateAmount;
 
-  const QuantityField({super.key, required this.controller, required this.updateAmount});
+  const AmountField({
+    super.key,
+    required this.controller,
+    required this.updateAmount,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -45,9 +49,21 @@ class QuantityField extends StatelessWidget {
               Expanded(
                 child: TextField(
                   controller: controller,
-                   onChanged: (value) {
+                  autofocus: false,
+                  onSubmitted: (value) {
+                    if (controller.text.contains(',')) {
+                      controller.text = controller.text.replaceAll(',', '.');
+                    }
                     final amount = double.tryParse(value) ?? 0.0;
                     updateAmount(amount);
+                  },
+                  onTapUpOutside: (event) {
+                    if (controller.text.contains(',')) {
+                      controller.text = controller.text.replaceAll(',', '.');
+                    }
+                    final amount = double.tryParse(controller.text) ?? 0.0;
+                    updateAmount(amount);
+                    FocusScope.of(context).unfocus();
                   },
                   keyboardType: TextInputType.number,
                   style: const TextStyle(
