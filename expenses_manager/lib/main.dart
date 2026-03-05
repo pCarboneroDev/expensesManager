@@ -4,6 +4,10 @@ import 'package:expenses_manager/di/dependendy_injection.dart';
 import 'package:expenses_manager/presentation/create_transaction/bloc/create_transaction_bloc.dart';
 import 'package:expenses_manager/presentation/create_transaction/ui/create_transaction_screen.dart';
 import 'package:expenses_manager/presentation/home/bloc/home_bloc.dart';
+import 'package:expenses_manager/presentation/login/bloc/login_bloc.dart';
+import 'package:expenses_manager/presentation/login/ui/screens/login_screen.dart';
+import 'package:expenses_manager/presentation/login/ui/screens/register_screen.dart';
+import 'package:expenses_manager/presentation/splash/splash_screen.dart';
 import 'package:expenses_manager/presentation/transactions/bloc/transaction_bloc.dart';
 import 'package:expenses_manager/presentation/transactions/ui/transactions_screen.dart';
 import 'package:expenses_manager/presentation/root.dart';
@@ -28,7 +32,8 @@ void main() async {
         BlocProvider(create: (context) => getIt<HomeBloc>()),
         BlocProvider(create: (context) => getIt<TransactionBloc>()),
         BlocProvider(create: (context) => getIt<CreateTransactionBloc>()),
-        BlocProvider(create: (context) => getIt<UpdateTransactionBloc>())
+        BlocProvider(create: (context) => getIt<UpdateTransactionBloc>()),
+        BlocProvider(create: (context) => getIt<LoginBloc>())
       ], 
       child: MyApp(theme: theme)
     )
@@ -49,9 +54,12 @@ class MyApp extends StatelessWidget {
         'root': (context) => Root(),
         'movements': (context) => TransactionsScreen(),
         'create_transaction': (context) => CreateTransactionScreen(),
-        'update_transaction': (context) => UpdateTransactionScreen()
+        'update_transaction': (context) => UpdateTransactionScreen(),
+        'splash': (context) => SplashScreen(),
+        'login': (context) => LoginScreen(),
+        'register': (context) => RegisterScreen()
       },
-      initialRoute: 'root'
+      initialRoute: 'splash'
     );
   }
 }

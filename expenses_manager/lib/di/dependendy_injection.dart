@@ -13,6 +13,7 @@ import 'package:expenses_manager/domain/usecases/transactions/get_month_transact
 import 'package:expenses_manager/domain/usecases/transactions/update_transaction_usecase.dart';
 import 'package:expenses_manager/presentation/create_transaction/bloc/create_transaction_bloc.dart';
 import 'package:expenses_manager/presentation/home/bloc/home_bloc.dart';
+import 'package:expenses_manager/presentation/login/bloc/login_bloc.dart';
 import 'package:expenses_manager/presentation/transactions/bloc/transaction_bloc.dart';
 import 'package:expenses_manager/presentation/update_transaction/bloc/update_transaction_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -44,4 +45,5 @@ Future<void> initGetIt() async {
   getIt.registerSingleton(TransactionBloc(getIt(), getIt(), getIt(), getIt()));
   getIt.registerSingleton(CreateTransactionBloc(getIt(), getIt()));
   getIt.registerSingleton(UpdateTransactionBloc(getIt(), getIt()));
+  getIt.registerSingleton(LoginBloc());
 }

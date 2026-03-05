@@ -43,6 +43,7 @@ dependencies:
   intl: ^0.20.2
   json_theme: ^9.0.3
   dio: ^5.9.1
+  firebase_auth: ^6.2.0
 
 dev_dependencies:
   flutter_test:
