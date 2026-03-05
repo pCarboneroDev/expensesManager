@@ -25,7 +25,7 @@ class MovementHome extends StatelessWidget {
               children: [
                 Icon(FontAwesomeIcons.bowlFood),
                 Text(movement.category.name),
-                Text('${movement.quantity}€'),
+                Text('${movement.amount}€'),
               ],
             ),
             Divider(),

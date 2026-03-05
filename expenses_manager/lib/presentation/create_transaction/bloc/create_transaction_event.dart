@@ -4,9 +4,9 @@ abstract class CreateTransactionEvent {}
 
 class LoadCategories extends CreateTransactionEvent {}
 
-class CreateTransction extends CreateTransactionEvent{
+class CreateTransaction extends CreateTransactionEvent{
   final TransactionModel newTransaction;
-  CreateTransction(this.newTransaction);
+  CreateTransaction(this.newTransaction);
 }
 
 class UpdateTransactionType extends CreateTransactionEvent {

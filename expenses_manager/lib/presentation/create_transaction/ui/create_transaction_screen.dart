@@ -2,6 +2,7 @@ import 'package:expenses_manager/domain/models/category_model.dart';
 import 'package:expenses_manager/domain/models/movement_model.dart';
 import 'package:expenses_manager/presentation/create_transaction/bloc/create_transaction_bloc.dart';
 import 'package:expenses_manager/presentation/create_transaction/ui/widgets/CreateTransactionForm.dart';
+import 'package:expenses_manager/utils/transaction_type.dart';
 import 'package:expenses_manager/utils/ui_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -39,6 +40,18 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
     ).add(UpdateTransactionType(type));
   }
 
+  void updateAmount(double amount){
+    BlocProvider.of<CreateTransactionBloc>(
+      context,
+    ).add(UpdateTransactionQuantity(amount));
+  }
+
+  void createTransaction(TransactionModel transaction){
+    BlocProvider.of<CreateTransactionBloc>(
+      context,
+    ).add(CreateTransaction(transaction));
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +71,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                   const Icon(Icons.error_outline, size: 64, color: Colors.red),
                   const SizedBox(height: 16),
                   Text(
-                    'Error al cargar categorías',
+                    state.uiState.errorMessage,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 8),
@@ -86,6 +99,8 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
               updateDate: updateDate,
               updateCategory: updateCategory,
               updateType: updateType,
+              create: createTransaction,
+              updateAmount: updateAmount,
             ),
             UIStatus.idle: const Center(child: Text('IDLE')),
           };

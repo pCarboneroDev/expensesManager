@@ -4,6 +4,7 @@ import 'package:expenses_manager/presentation/create_transaction/ui/widgets/cate
 import 'package:expenses_manager/presentation/create_transaction/ui/widgets/date_card.dart';
 import 'package:expenses_manager/presentation/create_transaction/ui/widgets/quantity_field.dart';
 import 'package:expenses_manager/presentation/create_transaction/ui/widgets/type_selector.dart';
+import 'package:expenses_manager/utils/transaction_type.dart';
 import 'package:flutter/material.dart';
 
 class CreateTransactionForm extends StatelessWidget {
@@ -16,8 +17,11 @@ class CreateTransactionForm extends StatelessWidget {
   final void Function(DateTime) updateDate;
   final void Function(CategoryModel) updateCategory;
   final void Function(TransactionType) updateType;
+  final void Function(TransactionModel) create;
+  final void Function(double) updateAmount;
 
   const CreateTransactionForm({
+    super.key,
     required this.categories,
     required this.selectedType,
     required this.selectedDate,
@@ -26,11 +30,13 @@ class CreateTransactionForm extends StatelessWidget {
     required this.updateDate,
     required this.updateCategory,
     required this.updateType,
+    required this.create, 
+    required this.updateAmount,
   });
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController amountController = TextEditingController();
+    final TextEditingController amountController = TextEditingController(text: (quantity > 0) ? quantity.toString() : null);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
@@ -39,7 +45,7 @@ class CreateTransactionForm extends StatelessWidget {
         children: [
           TypeSelector(selectedType: selectedType, updateType: updateType),
           const SizedBox(height: 20),
-          QuantityField(controller: amountController),
+          QuantityField(controller: amountController, updateAmount: updateAmount),
           const SizedBox(height: 20),
           DateCard(selectedDate: selectedDate, updateDate: updateDate),
           const SizedBox(height: 20),
@@ -81,27 +87,25 @@ class CreateTransactionForm extends StatelessWidget {
                   return;
                 }
 
-                // Crear la transacción (aquí normalmente llamarías a tu servicio/backend)
                 final transaction = TransactionModel(
                   id: DateTime.now().millisecondsSinceEpoch,
                   date: selectedDate,
-                  quantity: amount,
+                  amount: amount,
                   category: selectedCategory!,
                   type: selectedType,
                 );
-                // todo mandar al bloc
+                // mandar al bloc
+                create(transaction);
 
-                // Mostrar mensaje de éxito y regresar
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      '${selectedType == TransactionType.expense ? "Gasto" : "Ingreso"} creado con éxito',
+                      '${selectedType == TransactionType.expense ? "Expense" : "Income"} created',
                     ),
                     backgroundColor: Colors.green,
                   ),
                 );
-
-                Navigator.pop(context, transaction);
+                Navigator.pop(context);
               },
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(

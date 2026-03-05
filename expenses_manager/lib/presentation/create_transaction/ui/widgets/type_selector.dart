@@ -1,4 +1,4 @@
-import 'package:expenses_manager/domain/models/movement_model.dart';
+import 'package:expenses_manager/utils/transaction_type.dart';
 import 'package:flutter/material.dart';
 
 class TypeSelector extends StatelessWidget {

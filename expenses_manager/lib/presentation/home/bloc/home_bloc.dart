@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:expenses_manager/domain/models/movement_model.dart';
 import 'package:expenses_manager/domain/usecases/transactions/get_last_transactions_usecase.dart';
+import 'package:expenses_manager/utils/transaction_type.dart';
 import 'package:expenses_manager/utils/ui_state.dart';
 import 'package:meta/meta.dart';
 
@@ -33,11 +34,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         (movements) {
           final income = movements
               .where((e) => (e.type == TransactionType.income /*&& e.date.month == DateTime.now().month*/))
-              .fold(0.0, (sum, e) => sum += e.quantity);
+              .fold(0.0, (sum, e) => sum += e.amount);
 
           final expense = movements
               .where((e) => e.type == TransactionType.expense)
-              .fold(0.0, (sum, e) => sum += e.quantity);
+              .fold(0.0, (sum, e) => sum += e.amount);
 
           emit(
             state.copyWith(

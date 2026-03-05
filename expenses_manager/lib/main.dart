@@ -7,6 +7,8 @@ import 'package:expenses_manager/presentation/home/bloc/home_bloc.dart';
 import 'package:expenses_manager/presentation/transactions/bloc/transaction_bloc.dart';
 import 'package:expenses_manager/presentation/transactions/ui/transactions_screen.dart';
 import 'package:expenses_manager/presentation/root.dart';
+import 'package:expenses_manager/presentation/update_transaction/bloc/update_transaction_bloc.dart';
+import 'package:expenses_manager/presentation/update_transaction/ui/update_transaction_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,7 +28,7 @@ void main() async {
         BlocProvider(create: (context) => getIt<HomeBloc>()),
         BlocProvider(create: (context) => getIt<TransactionBloc>()),
         BlocProvider(create: (context) => getIt<CreateTransactionBloc>()),
-
+        BlocProvider(create: (context) => getIt<UpdateTransactionBloc>())
       ], 
       child: MyApp(theme: theme)
     )
@@ -42,13 +44,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-       theme: theme,//ThemeData(
-      //   colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      // ),
+       theme: theme,
       routes: {
         'root': (context) => Root(),
         'movements': (context) => TransactionsScreen(),
-        'create_transaction': (context) => CreateTransactionScreen()
+        'create_transaction': (context) => CreateTransactionScreen(),
+        'update_transaction': (context) => UpdateTransactionScreen()
       },
       initialRoute: 'root'
     );

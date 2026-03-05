@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 class QuantityField extends StatelessWidget {
   final TextEditingController controller;
+  final void Function(double) updateAmount;
 
-  const QuantityField({super.key, required this.controller});
+  const QuantityField({super.key, required this.controller, required this.updateAmount});
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +45,10 @@ class QuantityField extends StatelessWidget {
               Expanded(
                 child: TextField(
                   controller: controller,
+                   onChanged: (value) {
+                    final amount = double.tryParse(value) ?? 0.0;
+                    updateAmount(amount);
+                  },
                   keyboardType: TextInputType.number,
                   style: const TextStyle(
                     fontSize: 32,

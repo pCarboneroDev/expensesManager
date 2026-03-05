@@ -2,22 +2,25 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:expenses_manager/domain/models/category_model.dart';
 import 'package:expenses_manager/domain/models/movement_model.dart';
+import 'package:expenses_manager/domain/models/params/update_params.dart';
 import 'package:expenses_manager/domain/usecases/categories/get_categories_usecase.dart';
-import 'package:expenses_manager/domain/usecases/transactions/create_transaction_usecase.dart';
+import 'package:expenses_manager/domain/usecases/transactions/update_transaction_usecase.dart';
 import 'package:expenses_manager/utils/transaction_type.dart';
 import 'package:expenses_manager/utils/ui_state.dart';
 import 'package:flutter/material.dart';
 
-part 'create_transaction_event.dart';
-part 'create_transaction_state.dart';
+part 'update_transaction_event.dart';
+part 'update_transaction_state.dart';
 
-class CreateTransactionBloc extends Bloc<CreateTransactionEvent, CreateTransactionState> {
+class UpdateTransactionBloc extends Bloc<UpdateTransactionEvent, UpdateTransactionState> {
   final GetCategoriesUsecase getCategoriesUsecase;
-  final CreateTransactionUsecase createTransactionUsecase;
+  final UpdateTransactionUsecase updateTransactionUsecase;
 
-  CreateTransactionBloc(this.getCategoriesUsecase, this.createTransactionUsecase)
-    : super(
-        CreateTransactionState(
+  UpdateTransactionBloc(
+    this.getCategoriesUsecase, 
+    this.updateTransactionUsecase
+    ): super(
+        UpdateTransactionState(
           uiState: UIState.idle(),
           newTransaction: TransactionModel.empty(),
           quantity: 0,
@@ -25,10 +28,11 @@ class CreateTransactionBloc extends Bloc<CreateTransactionEvent, CreateTransacti
           category: CategoryModel(id: 0, name: "", icon: Icons.restaurant),
           type: TransactionType.expense,
           categories: [],
+          transactionId: 0
         ),
       ) {
-    on<CreateTransactionEvent>((event, emit) {
-      // 
+    on<UpdateTransactionEvent>((event, emit) {
+      // TODO: implement event handler
     });
 
     on<LoadCategories>((event, emit) async {
@@ -54,19 +58,23 @@ class CreateTransactionBloc extends Bloc<CreateTransactionEvent, CreateTransacti
       emit(state.copyWith(category: event.category));
     });
 
-    on<UpdateTransactionQuantity>((event, emit) async {
+    on<UpdateTransactionAmount>((event, emit) async {
       emit(state.copyWith(quantity: event.quantity));
     });
 
-    on<CreateTransaction>((event, emit) async {
-      emit(state.copyWith(uiState: UIState.loading()));
+    on<UpdateTransactionId>((event, emit) async {
+      emit(state.copyWith(transactionId: event.id));
+    });
 
-      final result = await createTransactionUsecase.call(event.newTransaction);
+    on<UpdateTransaction>((event, emit) async {
+     emit(state.copyWith(uiState: UIState.loading()));
+
+      final result = await updateTransactionUsecase.call(UpdateParams(transactionId: state.transactionId, transaction: event.transaction));
 
       result.fold(
         (fail) => emit(state.copyWith(uiState: UIState.error(fail.message))),
         (categories) => emit(state.copyWith(uiState: UIState.success()))
       );
-    }); 
+    });
   }
 }

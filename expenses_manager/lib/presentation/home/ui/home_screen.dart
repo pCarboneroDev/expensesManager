@@ -5,6 +5,7 @@ import 'package:expenses_manager/presentation/home/ui/widgets/movements_home.dar
 import 'package:expenses_manager/utils/ui_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -26,14 +27,14 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(title: Text('Home')),
       drawer: Drawer(
         child: ListView(
-          // Important: Remove any padding from the ListView.
           padding: EdgeInsets.zero,
           children: [
             const DrawerHeader(
               decoration: BoxDecoration(color: Colors.blue),
               child: Text('Drawer Header'),
             ),
-            ListTile(title: const Text('Item 1'), onTap: () {}),
+            ListTile(title: const Text('Settings'), leading: Icon(Icons.settings), onTap: () {}),
+            ListTile(title: const Text('Account'), leading: Icon(FontAwesomeIcons.person), onTap: () {}),
             ListTile(title: const Text('Item 2'), onTap: () {}),
           ],
         ),
