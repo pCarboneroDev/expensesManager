@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
-import 'package:expenses_manager/data/mock_datasource.dart';
-import 'package:expenses_manager/data/remote_datasource.dart';
+import 'package:expenses_manager/data/datatasources/mock_datasource.dart';
+import 'package:expenses_manager/data/datatasources/remote_datasource.dart';
 import 'package:expenses_manager/domain/exceptions/failure.dart';
 import 'package:expenses_manager/domain/models/movement_model.dart';
 import 'package:expenses_manager/domain/models/params/filter_transactions_params.dart';

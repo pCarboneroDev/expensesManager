@@ -1,3 +1,4 @@
+import 'package:expenses_manager/presentation/login/ui/widgets/header.dart';
 import 'package:expenses_manager/presentation/login/ui/widgets/social_button.dart';
 import 'package:flutter/material.dart';
 
@@ -16,21 +17,7 @@ class LoginScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // Logo o ícono de la app
-                const Icon(
-                  Icons.chat_bubble_outline,
-                  size: 80,
-                ),
-                const SizedBox(height: 32),
-                
-                // Título de la app
-                const Text(
-                  'Bienvenido de vuelta',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                Header(icon: Icons.bubble_chart_outlined, title: 'Bienvenido de vuelta'),
                 const SizedBox(height: 32),
                 
                 // Formulario de email

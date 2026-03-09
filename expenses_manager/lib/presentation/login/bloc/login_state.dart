@@ -1,10 +1,14 @@
 part of 'login_bloc.dart';
 
-sealed class LoginState extends Equatable {
-  const LoginState();
+class LoginState extends Equatable {
+  final UIState uistate;
+
+  const LoginState({required this.uistate});
+
+  LoginState copyWith({
+    UIState? uistate
+  }) => LoginState(uistate: uistate ?? this.uistate);
   
   @override
-  List<Object> get props => [];
+  List<Object> get props => [uistate];
 }
-
-final class LoginInitial extends LoginState {}

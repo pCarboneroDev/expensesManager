@@ -1,0 +1,7 @@
+Copyright (c) 2026 Pablo Carbonero Almellones.
+
+All rights reserved.
+
+This repository is provided for viewing purposes only as part of a professional portfolio.
+
+No permission is granted to copy, modify, distribute, or use this software without explicit written permission from the author.
