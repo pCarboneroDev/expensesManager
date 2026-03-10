@@ -34,8 +34,8 @@ class FirebaseAuthService {
       }
       return Left(DataSourceException('unknown error'));
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'email-already-in-use') {
-        print('Ya existe una cuenta con ese correo electrónico');
+      if (e.code == 'invalid-credential') {
+        return Left(DataSourceException('Wrong password or email'));
       }
       return Left(DataSourceException(e.toString()));
     } catch (e) {

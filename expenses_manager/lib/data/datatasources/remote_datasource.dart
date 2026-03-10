@@ -6,6 +6,7 @@ import 'package:expenses_manager/data/entities/transaction_entity.dart';
 import 'package:expenses_manager/domain/exceptions/failure.dart';
 import 'package:expenses_manager/domain/models/category_model.dart';
 import 'package:expenses_manager/domain/models/movement_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class RemoteDatasource {
   final String baseUrl = 'http://10.0.2.2:8000/';
@@ -69,8 +70,14 @@ class RemoteDatasource {
 
     try {
 
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null){
+        return Left(DataSourceException('No user found'));
+      }
+
       final queryParams = <String, dynamic>{};
 
+      queryParams['user_id'] = user.uid;
       if (limit != null) queryParams['limit'] = limit;
       if (skip != null) queryParams['skip'] = skip;
       if (categoryId != null) queryParams['category_id'] = categoryId;
@@ -102,9 +109,13 @@ class RemoteDatasource {
     TransactionModel newTransaction,
   ) async {
     try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null){
+        return Left(DataSourceException('No user found'));
+      }
       final t = CreateTransactionDto(
         date: newTransaction.date,
-        userId: 'testid',
+        userId: user.uid,
         amount: newTransaction.amount,
         categoryId: newTransaction.category.id,
         type: newTransaction.type.name,
