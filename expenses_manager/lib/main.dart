@@ -23,13 +23,13 @@ import 'package:json_theme/json_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await initGetIt();
-
   await dotenv.load(fileName: ".env");
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  await initGetIt();
 
   final themeStr = await rootBundle.loadString('assets/appainter_theme.json');
   final themeJson = jsonDecode(themeStr);

@@ -18,7 +18,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     this.registerUsecase, 
     this.loginUsecase, 
     this.singOutUsecase
-  ) : super(LoginState(uistate: UIState.success())) {
+  ) : super(LoginState(uistate: UIState.idle())) {
     on<LoginEvent>((event, emit) {
       // TODO: implement event handler
     });
@@ -26,7 +26,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     on<Register>((event, emit) async {
       emit(state.copyWith(uistate: UIState.loading()));
 
-      final result = await registerUsecase.call(UserParams(email: event.user, password: event.password));
+      final result = await registerUsecase.call(UserParams(email: event.email, password: event.password));
 
       result.fold(
         (fail) => emit(state.copyWith(uistate: UIState.error(fail.message))),
@@ -37,7 +37,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     on<Login>((event, emit) async {
       emit(state.copyWith(uistate: UIState.loading()));
 
-      final result = await loginUsecase.call(UserParams(email: event.user, password: event.password));
+      final result = await loginUsecase.call(UserParams(email: event.email, password: event.password));
 
       result.fold(
         (fail) => emit(state.copyWith(uistate: UIState.error(fail.message))),

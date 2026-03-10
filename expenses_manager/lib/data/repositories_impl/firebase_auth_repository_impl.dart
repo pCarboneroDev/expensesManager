@@ -11,12 +11,12 @@ class FirebaseAuthRepositoryImpl implements FirebaseAuthRepository {
 
   @override
   Future<Either<Failure, User>> loginWithEmailAndPassword(String email, String password) async {
-    return await service.registerWithEmailAndPassword(email, password);
+    return await service.loginWithEmailAndPassword(email, password);
   }
 
   @override
   Future<Either<Failure, User>> registerWithEmailAndPassword(String email, String password) async {
-    return await service.loginWithEmailAndPassword(email, password);
+    return await service.registerWithEmailAndPassword(email, password);
   }
 
   @override

@@ -21,6 +21,10 @@ class _HomeScreenState extends State<HomeScreen> {
     BlocProvider.of<HomeBloc>(context).add(LoadLastMovementsEvent());
   }
 
+  void signOut() {
+    BlocProvider.of<HomeBloc>(context).add(SignOutEvent());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,7 +39,38 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             ListTile(title: const Text('Settings'), leading: Icon(Icons.settings), onTap: () {}),
             ListTile(title: const Text('Account'), leading: Icon(FontAwesomeIcons.person), onTap: () {}),
-            ListTile(title: const Text('Item 2'), onTap: () {}),
+            ListTile(
+              tileColor: Colors.red,
+              title: const Text('SignOut'), 
+              leading: Icon(FontAwesomeIcons.arrowRightFromBracket), 
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text('Sign out'),
+                      content: const Text('Are you sure you want to sign out?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            signOut();
+                            Navigator.pushReplacementNamed(context, 'login');
+                          },
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.red,
+                          ),
+                          child: const Text('Sign out'),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+            )
           ],
         ),
       ),

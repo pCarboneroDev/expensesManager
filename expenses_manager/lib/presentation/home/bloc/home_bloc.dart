@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:expenses_manager/domain/models/movement_model.dart';
+import 'package:expenses_manager/domain/usecases/auth/signout_usecase.dart';
 import 'package:expenses_manager/domain/usecases/transactions/get_last_transactions_usecase.dart';
 import 'package:expenses_manager/utils/transaction_type.dart';
 import 'package:expenses_manager/utils/ui_state.dart';
@@ -11,8 +12,9 @@ part 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final GetLastTransactionsUsecase getLastMovementsUsecase;
+  final SingOutUsecase singOutUsecase;
 
-  HomeBloc(this.getLastMovementsUsecase)
+  HomeBloc(this.getLastMovementsUsecase, this.singOutUsecase)
     : super(
         HomeState(
           uiState: UIState.idle(),
@@ -50,6 +52,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           );
         },
       );
+    });
+
+    on<SignOutEvent>((event, emit) {
+      singOutUsecase.call(null);
     });
   }
 }
