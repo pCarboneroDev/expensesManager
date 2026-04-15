@@ -32,6 +32,12 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
     _updateControllerFromState(state);
   }
 
+  @override
+  void dispose() {
+    amountController.dispose();
+    super.dispose();
+  }
+
   void _updateControllerFromState(CreateTransactionState state) {
     final currentText = amountController.text;
     final expectedText = state.amount > 0 ? state.amount.toString() : '';
@@ -123,6 +129,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
             ),
             UIStatus.idle: const Center(child: Text('IDLE')),
           };
+          print(state.amount);
           return status[state.uiState.status] ?? Container();
         },
       ),

@@ -41,7 +41,7 @@ class TransactionList extends StatelessWidget {
                       );
                     },
                     onDismissed: (direction) {
-                      deleteTransaction(transaction.id);
+                      deleteTransaction(transaction.id); //! en el bloc se actualiza el estado y pone los elementos de nuevo, hay que hacer que no lo haga y siga funcionando correctamente
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text('Deleted successfully'),

@@ -5,6 +5,7 @@ import 'package:expenses_manager/firebase_options.dart';
 import 'package:expenses_manager/presentation/create_transaction/bloc/create_transaction_bloc.dart';
 import 'package:expenses_manager/presentation/create_transaction/ui/create_transaction_screen.dart';
 import 'package:expenses_manager/presentation/home/bloc/home_bloc.dart';
+import 'package:expenses_manager/presentation/insights/bloc/insights_bloc.dart';
 import 'package:expenses_manager/presentation/login/bloc/login_bloc.dart';
 import 'package:expenses_manager/presentation/login/ui/screens/login_screen.dart';
 import 'package:expenses_manager/presentation/login/ui/screens/register_screen.dart';
@@ -42,7 +43,8 @@ void main() async {
         BlocProvider(create: (context) => getIt<TransactionBloc>()),
         BlocProvider(create: (context) => getIt<CreateTransactionBloc>()),
         BlocProvider(create: (context) => getIt<UpdateTransactionBloc>()),
-        BlocProvider(create: (context) => getIt<LoginBloc>())
+        BlocProvider(create: (context) => getIt<LoginBloc>()),
+        BlocProvider(create: (context) => getIt<InsightsBloc>())
       ], 
       child: MyApp(theme: theme)
     )
@@ -58,7 +60,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-       theme: theme,
+      theme: theme,
       routes: {
         'root': (context) => Root(),
         'movements': (context) => TransactionsScreen(),

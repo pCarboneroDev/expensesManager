@@ -1,4 +1,5 @@
 import 'package:expenses_manager/domain/models/movement_model.dart';
+import 'package:expenses_manager/utils/format_date.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -13,7 +14,7 @@ class MovementHome extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '${movement.date}',
+          formatDate(movement.date),
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 15),

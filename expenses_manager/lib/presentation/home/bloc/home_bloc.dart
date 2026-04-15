@@ -1,7 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:expenses_manager/domain/models/movement_model.dart';
+import 'package:expenses_manager/domain/models/params/filter_transactions_params.dart';
 import 'package:expenses_manager/domain/usecases/auth/signout_usecase.dart';
+import 'package:expenses_manager/domain/usecases/transactions/get_filtered_transactions_usecase.dart';
 import 'package:expenses_manager/domain/usecases/transactions/get_last_transactions_usecase.dart';
 import 'package:expenses_manager/utils/transaction_type.dart';
 import 'package:expenses_manager/utils/ui_state.dart';
@@ -12,9 +14,10 @@ part 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final GetLastTransactionsUsecase getLastMovementsUsecase;
+  final GetFilteredTransactionsUsecase getFilteredTransactionsUsecase;
   final SingOutUsecase singOutUsecase;
 
-  HomeBloc(this.getLastMovementsUsecase, this.singOutUsecase)
+  HomeBloc(this.getLastMovementsUsecase, this.singOutUsecase, this.getFilteredTransactionsUsecase)
     : super(
         HomeState(
           uiState: UIState.idle(),
@@ -29,7 +32,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
     on<LoadLastMovementsEvent>((event, emit) async {
       emit(state.copyWith(uiState: UIState.loading()));
-      final result = await getLastMovementsUsecase.call(null); // todo ver si es mejor quitar null
+      //final result = await getLastMovementsUsecase.call(null); // todo ver si es mejor quitar null
+      final result = await getFilteredTransactionsUsecase.callRaw(FilterTransactionsParams(date: DateTime.now().toString()));
 
       result.fold(
         (fail) => emit(state.copyWith(uiState: UIState.error(fail.message))),
@@ -45,7 +49,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           emit(
             state.copyWith(
               uiState: UIState.success(),
-              lastMovements: movements,
+              lastMovements: movements.length > 10 ? movements.sublist(movements.length - 10) : List.from(movements),
               monthExpenses: expense,
               monthIncome: income,
             ),

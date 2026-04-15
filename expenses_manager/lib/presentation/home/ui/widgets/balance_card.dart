@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class BalanceCard extends StatelessWidget {
   final double monthIncome;
@@ -8,50 +9,73 @@ class BalanceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 30),
-      // margin: EdgeInsets.all(20),
-      width: double.infinity,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(15)),
-        color: Color.fromARGB(255, 243, 237, 247),
-        boxShadow: [
-          BoxShadow(
-            color: const Color.fromARGB(31, 0, 0, 0),
-            offset: Offset(0, 3),
-            blurRadius: BorderSide.strokeAlignOutside,
-            spreadRadius: BorderSide.strokeAlignOutside,
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            '${monthIncome - monthExpenses}€',
-            style: TextStyle(fontSize: 55, fontWeight: FontWeight.bold),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                '-$monthExpenses',
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(width: 10),
-              Text(
-                '+$monthIncome€',
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [Spacer(), Text('Details'), Icon(Icons.arrow_right)],
-          ),
-        ],
+    final numberFormat = NumberFormat.currency(locale: 'en_EN', symbol: '€');
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          children: [
+            Text(
+              'Month resume',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildSummaryCard(
+                  'Incomes',
+                  numberFormat.format(monthIncome),
+                  Colors.green,
+                ),
+                _buildSummaryCard(
+                  'Expenses',
+                  numberFormat.format(monthExpenses),
+                  Colors.red,
+                ),
+                _buildSummaryCard(
+                  'Balance',
+                  numberFormat.format(monthIncome - monthExpenses),
+                  (monthIncome - monthExpenses) >= 0
+                      ? Colors.blue
+                      : Colors.orange,
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
+            // Indicador de porcentaje gastado vs ingresado
+            LinearProgressIndicator(
+              value: monthIncome > 0
+                  ? (monthExpenses / monthIncome).clamp(0.0, 1.0)
+                  : 0.0,
+              backgroundColor: Colors.grey[300],
+              color: Colors.red,
+              minHeight: 10,
+            ),
+            SizedBox(height: 10),
+            Text(
+              'You have spent ${((monthExpenses / monthIncome) * 100).toStringAsFixed(1)}% of your incomes.',
+            ),
+          ],
+        ),
       ),
     );
   }
+}
+
+Widget _buildSummaryCard(String title, String amount, Color color) {
+  return Column(
+    children: [
+      Text(title, style: TextStyle(fontSize: 14, color: Colors.grey[600])),
+      SizedBox(height: 8),
+      Text(
+        amount,
+        style: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color: color,
+        ),
+      ),
+    ],
+  );
 }

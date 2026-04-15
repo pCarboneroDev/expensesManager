@@ -100,7 +100,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     });
 
     on<DeleteTransaction>((event, emit) async {
-      emit(state.copyWith(uiState: UIState.loading()));
+      //emit(state.copyWith(uiState: UIState.loading())); //! por algún motivo eso lo rompe, no entiendo nada
       final result = await deleteTransactionUsecase.call(event.transactionId);
 
       result.fold(

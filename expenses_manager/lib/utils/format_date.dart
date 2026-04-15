@@ -4,35 +4,35 @@ String formatDate(DateTime date) {
   final yesterday = DateTime(now.year, now.month, now.day - 1);
 
   if (date == today) {
-    return 'Hoy';
+    return 'Today';
   } else if (date == yesterday) {
-    return 'Ayer';
+    return 'Yesterday';
   } else {
     // Formato: "lunes, 25 de febrero"
     final weekdays = [
-      'lunes',
-      'martes',
-      'miércoles',
-      'jueves',
-      'viernes',
-      'sábado',
-      'domingo',
+      'monday',
+      'thursday',
+      'wednesday',
+      'tuesday',
+      'friday',
+      'saturday',
+      'sunday',
     ];
     final months = [
-      'enero',
-      'febrero',
-      'marzo',
-      'abril',
-      'mayo',
-      'junio',
-      'julio',
-      'agosto',
-      'septiembre',
-      'octubre',
-      'noviembre',
-      'diciembre',
+      'january',
+      'february',
+      'march',
+      'april',
+      'may',
+      'june',
+      'july',
+      'august',
+      'september',
+      'october',
+      'november',
+      'december',
     ];
 
-    return '${weekdays[date.weekday - 1]}, ${date.day} de ${months[date.month - 1]}';
+    return '${weekdays[date.weekday - 1]}, ${date.day}, ${months[date.month - 1]}';
   }
 }

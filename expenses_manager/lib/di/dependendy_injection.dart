@@ -4,9 +4,11 @@ import 'package:expenses_manager/data/datatasources/remote_datasource.dart';
 import 'package:expenses_manager/data/repositories_impl/categories_repository_impl.dart';
 import 'package:expenses_manager/data/repositories_impl/firebase_auth_repository_impl.dart';
 import 'package:expenses_manager/data/repositories_impl/transactions_repository_impl.dart';
+import 'package:expenses_manager/data/repositories_impl/users_repository_impl.dart';
 import 'package:expenses_manager/domain/repositories/categories_repository.dart';
 import 'package:expenses_manager/domain/repositories/firebase_auth_repository.dart';
 import 'package:expenses_manager/domain/repositories/transactions_repository.dart';
+import 'package:expenses_manager/domain/repositories/users_repository.dart';
 import 'package:expenses_manager/domain/usecases/auth/login_usecase.dart';
 import 'package:expenses_manager/domain/usecases/auth/register_usecase.dart';
 import 'package:expenses_manager/domain/usecases/auth/signout_usecase.dart';
@@ -17,8 +19,10 @@ import 'package:expenses_manager/domain/usecases/transactions/get_filtered_trans
 import 'package:expenses_manager/domain/usecases/transactions/get_last_transactions_usecase.dart';
 import 'package:expenses_manager/domain/usecases/transactions/get_month_transactions_usecase.dart';
 import 'package:expenses_manager/domain/usecases/transactions/update_transaction_usecase.dart';
+import 'package:expenses_manager/domain/usecases/users/create_user_usecase.dart';
 import 'package:expenses_manager/presentation/create_transaction/bloc/create_transaction_bloc.dart';
 import 'package:expenses_manager/presentation/home/bloc/home_bloc.dart';
+import 'package:expenses_manager/presentation/insights/bloc/insights_bloc.dart';
 import 'package:expenses_manager/presentation/login/bloc/login_bloc.dart';
 import 'package:expenses_manager/presentation/transactions/bloc/transaction_bloc.dart';
 import 'package:expenses_manager/presentation/update_transaction/bloc/update_transaction_bloc.dart';
@@ -35,7 +39,8 @@ Future<void> initGetIt() async {
   // repositories
   getIt.registerSingleton<TransactionsRepository>(TransactionsRepositoryImpl(getIt(), getIt()));
   getIt.registerSingleton<CategoriesRepository>(CategoriesRepositoryImpl(getIt(), getIt()));
-  getIt.registerSingleton<FirebaseAuthRepository>(FirebaseAuthRepositoryImpl(service: getIt()));
+  getIt.registerSingleton<FirebaseAuthRepository>(FirebaseAuthRepositoryImpl(service: getIt(), datasource: getIt()));
+  getIt.registerSingleton<UsersRepository>(UsersRepositoryImpl(remoteDatasource: getIt()));
 
   // usecases
   // TRANSACTIONS
@@ -54,10 +59,15 @@ Future<void> initGetIt() async {
   getIt.registerSingleton(RegisterUsecase(getIt()));
   getIt.registerSingleton(SingOutUsecase(getIt()));
 
+  // USERS
+  getIt.registerSingleton(CreateUserUsecase(getIt()));
+
+
   // blocs
-  getIt.registerSingleton(HomeBloc(getIt(), getIt()));
+  getIt.registerSingleton(HomeBloc(getIt(), getIt(), getIt()));
   getIt.registerSingleton(TransactionBloc(getIt(), getIt(), getIt(), getIt()));
   getIt.registerSingleton(CreateTransactionBloc(getIt(), getIt()));
   getIt.registerSingleton(UpdateTransactionBloc(getIt(), getIt()));
-  getIt.registerSingleton(LoginBloc(getIt(), getIt(), getIt()));
+  getIt.registerSingleton(LoginBloc(getIt(), getIt(), getIt(), getIt()));
+  getIt.registerSingleton(InsightsBloc(getIt(), getIt()));
 }

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:expenses_manager/domain/models/category_model.dart';
-import 'package:flutter/material.dart';
+import 'package:expenses_manager/utils/get_icon.dart';
 
 class CategoryEntity {
   final int id;
@@ -33,7 +33,7 @@ extension CategoryEntityapper on CategoryEntity {
     return CategoryModel(
       id: id, 
       name: name, 
-      icon: Icons.abc
+      icon: getCategoryIcon(name)
     );
   }
 }

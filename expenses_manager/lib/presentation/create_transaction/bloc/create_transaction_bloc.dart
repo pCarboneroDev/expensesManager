@@ -11,12 +11,15 @@ import 'package:flutter/material.dart';
 part 'create_transaction_event.dart';
 part 'create_transaction_state.dart';
 
-class CreateTransactionBloc extends Bloc<CreateTransactionEvent, CreateTransactionState> {
+class CreateTransactionBloc
+    extends Bloc<CreateTransactionEvent, CreateTransactionState> {
   final GetCategoriesUsecase getCategoriesUsecase;
   final CreateTransactionUsecase createTransactionUsecase;
 
-  CreateTransactionBloc(this.getCategoriesUsecase, this.createTransactionUsecase)
-    : super(
+  CreateTransactionBloc(
+    this.getCategoriesUsecase,
+    this.createTransactionUsecase,
+  ) : super(
         CreateTransactionState(
           uiState: UIState.idle(),
           newTransaction: TransactionModel.empty(),
@@ -27,18 +30,34 @@ class CreateTransactionBloc extends Bloc<CreateTransactionEvent, CreateTransacti
           categories: [],
         ),
       ) {
-    on<CreateTransactionEvent>((event, emit) {
-      // 
-    });
+    on<CreateTransactionEvent>((event, emit) {});
 
     on<LoadCategories>((event, emit) async {
-      emit(state.copyWith(uiState: UIState.loading()));
+      final initial = state.initial();
+
+      emit(
+        state.copyWith(
+          uiState: UIState.loading(),
+          newTransaction: initial.newTransaction,
+          amount: initial.amount,
+          date: initial.date,
+          category: initial.category,
+          type: initial.type,
+          categories: initial.categories,
+        ),
+      );
 
       final result = await getCategoriesUsecase.call(null);
 
       result.fold(
         (fail) => emit(state.copyWith(uiState: UIState.error(fail.message))),
-        (categories) => emit(state.copyWith(uiState: UIState.success(), categories: categories, category: categories[0]))
+        (categories) => emit(
+          state.copyWith(
+            uiState: UIState.success(),
+            categories: categories,
+            category: categories[0],
+          ),
+        ),
       );
     });
 
@@ -65,8 +84,8 @@ class CreateTransactionBloc extends Bloc<CreateTransactionEvent, CreateTransacti
 
       result.fold(
         (fail) => emit(state.copyWith(uiState: UIState.error(fail.message))),
-        (categories) => emit(state.copyWith(uiState: UIState.success()))
+        (categories) => emit(state.copyWith(uiState: UIState.success())),
       );
-    }); 
+    });
   }
 }

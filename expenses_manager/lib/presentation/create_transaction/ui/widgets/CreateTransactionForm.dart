@@ -4,8 +4,10 @@ import 'package:expenses_manager/presentation/create_transaction/ui/widgets/cate
 import 'package:expenses_manager/presentation/create_transaction/ui/widgets/date_card.dart';
 import 'package:expenses_manager/presentation/create_transaction/ui/widgets/amount_field.dart';
 import 'package:expenses_manager/presentation/create_transaction/ui/widgets/type_selector.dart';
+import 'package:expenses_manager/presentation/transactions/bloc/transaction_bloc.dart';
 import 'package:expenses_manager/utils/transaction_type.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CreateTransactionForm extends StatelessWidget {
   final List<CategoryModel> categories;
@@ -101,12 +103,14 @@ class CreateTransactionForm extends StatelessWidget {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      '${selectedType == TransactionType.expense ? "Expense" : "Income"} created',
+                      '${selectedType == TransactionType.expense ? "Expense" : "Income"} created', 
                     ),
                     backgroundColor: Colors.green,
                   ),
                 );
-                Navigator.pop(context);
+                // todo revisar si esto es buena práctica
+                context.read<TransactionBloc>().add(OnLoadMonthTransactions());
+                Navigator.pop(context, true);
               },
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(

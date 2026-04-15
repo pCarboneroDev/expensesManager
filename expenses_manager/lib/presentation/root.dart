@@ -1,5 +1,5 @@
-import 'package:expenses_manager/main.dart';
 import 'package:expenses_manager/presentation/home/ui/home_screen.dart';
+import 'package:expenses_manager/presentation/insights/ui/insights_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -14,7 +14,7 @@ class _RootState extends State<Root> {
   int selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
-    final List<Widget> screens = [HomeScreen(), MyHomePage(title: 'pruebis')];
+    final List<Widget> screens = [HomeScreen(), InsightsScreen()];
 
     // TODO COMPROBAR SI ES MEJOR QU LAS 2 PANTALLAS PRINCIPALES COMPARTAN SCAFFOLD Y GESTIONAR EL CONTENIDO DE CADA UNA DESDE AQUI :)))
     // LO DIGO POR ESTO: https://stackoverflow.com/questions/64618050/is-it-correct-to-have-nested-scaffold-in-flutter

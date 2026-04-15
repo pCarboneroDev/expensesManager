@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:expenses_manager/data/entities/category_entity.dart';
 import 'package:expenses_manager/data/entities/create_transaction_dto.dart';
 import 'package:expenses_manager/data/entities/transaction_entity.dart';
+import 'package:expenses_manager/data/entities/user_entity.dart';
 import 'package:expenses_manager/domain/exceptions/failure.dart';
 import 'package:expenses_manager/domain/models/category_model.dart';
 import 'package:expenses_manager/domain/models/movement_model.dart';
@@ -61,17 +62,38 @@ class RemoteDatasource {
     }
   }
 
+  Future<Either<Failure, List<TransactionModel>>> getLastTransactions() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        return Left(DataSourceException('No user found'));
+      }
+
+      final response = await dio.get('transactions/last', queryParameters: {"user_id": user.uid});
+      final List<dynamic> decodedJson = response.data;
+
+      if (response.statusCode == 200) {
+        final transactions = decodedJson
+            .map((item) => TransactionEntity.fromMap(item).toModel())
+            .toList(); //
+        return Right(transactions);
+      } else {
+        return Left(DataSourceException(response.statusMessage.toString()));
+      }
+    } catch (error) {
+      return Left(DataSourceException(error.toString()));
+    }
+  }
+
   Future<Either<Failure, List<TransactionModel>>> getFilteredTransactions({
     int? skip,
     int? limit,
     int? categoryId,
     String date = 'month',
   }) async {
-
     try {
-
       final user = FirebaseAuth.instance.currentUser;
-      if (user == null){
+      if (user == null) {
         return Left(DataSourceException('No user found'));
       }
 
@@ -83,19 +105,17 @@ class RemoteDatasource {
       if (categoryId != null) queryParams['category_id'] = categoryId;
       queryParams['date'] = date.toLowerCase();
 
-
       final response = await dio.get(
         'transactions',
-        queryParameters: queryParams
+        queryParameters: queryParams,
       );
 
       final List<dynamic> decodedJson = response.data;
 
-
       if (response.statusCode == 200) {
         final transactions = decodedJson
             .map((item) => TransactionEntity.fromMap(item).toModel())
-            .toList(); 
+            .toList();
         return Right(transactions);
       } else {
         return Left(DataSourceException(response.statusMessage.toString()));
@@ -110,7 +130,7 @@ class RemoteDatasource {
   ) async {
     try {
       final user = FirebaseAuth.instance.currentUser;
-      if (user == null){
+      if (user == null) {
         return Left(DataSourceException('No user found'));
       }
       final t = CreateTransactionDto(
@@ -172,6 +192,26 @@ class RemoteDatasource {
           decodedJson,
         ).toModel();
         return Right(transactionResponse);
+      } else {
+        return Left(DataSourceException(response.statusMessage.toString()));
+      }
+    } catch (error) {
+      return Left(DataSourceException(error.toString()));
+    }
+  }
+
+  Future<Either<Failure, UserEntity>> createUser(UserEntity user) async {
+    try {
+      final response = await dio.post(
+        'users',
+        data: UserEntity(id: user.id, email: user.email).toMap(),
+      );
+
+      final decodedJson = response.data;
+
+      if (response.statusCode == 200) {
+        final res = UserEntity.fromMap(decodedJson);
+        return Right(res);
       } else {
         return Left(DataSourceException(response.statusMessage.toString()));
       }

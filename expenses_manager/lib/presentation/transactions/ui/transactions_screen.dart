@@ -12,13 +12,13 @@ class TransactionsScreen extends StatefulWidget {
   State<TransactionsScreen> createState() => _TransactionsScreenState();
 }
 
-class _TransactionsScreenState extends State<TransactionsScreen> {
+class _TransactionsScreenState extends State<TransactionsScreen> with RouteAware  {
   @override
   void initState() {
     super.initState();
     BlocProvider.of<TransactionBloc>(context).add(OnLoadMonthTransactions());
   }
-
+  
   void deleteTransaction(int transactionId) {
     BlocProvider.of<TransactionBloc>(
       context,

@@ -19,4 +19,8 @@ class GetFilteredTransactionsUsecase implements UseCase<FilterTransactionsParams
       ),
     );
   }
+
+  Future<Either<Failure, List<TransactionModel>>> callRaw(FilterTransactionsParams params) {
+    return repo.getFilteredTransactions(params);
+  }
 }

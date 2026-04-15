@@ -14,7 +14,7 @@ class TransactionsRepositoryImpl implements TransactionsRepository{
 
   @override
   Future<Either<Failure, List<TransactionModel>>> getLastTransactions() async {
-    return await dataSource.getAllMovements();
+    return await remoteDatasource.getLastTransactions();
   }
   
   @override
