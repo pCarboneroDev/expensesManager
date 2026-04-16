@@ -1,5 +1,5 @@
 import 'package:expenses_manager/domain/models/category_model.dart';
-import 'package:expenses_manager/presentation/create_transaction/ui/widgets/category_modal.dart';
+import 'package:expenses_manager/presentation/widgets/transaction_form/category_modal.dart';
 import 'package:flutter/material.dart';
 
 class CategorySelector extends StatelessWidget {

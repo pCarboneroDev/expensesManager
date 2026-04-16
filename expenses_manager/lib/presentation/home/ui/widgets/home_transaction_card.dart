@@ -4,10 +4,10 @@ import 'package:expenses_manager/utils/format_date.dart';
 import 'package:expenses_manager/utils/transaction_type.dart';
 import 'package:flutter/material.dart';
 
-class TransactionCard extends StatelessWidget {
+class HomeTransactionCard extends StatelessWidget {
   final TransactionModel transaction;
 
-  const TransactionCard({super.key, required this.transaction});
+  const HomeTransactionCard({super.key, required this.transaction});
 
   @override
   Widget build(BuildContext context) {

@@ -1,7 +1,7 @@
 import 'package:expenses_manager/domain/models/movement_model.dart';
 import 'package:expenses_manager/presentation/home/bloc/home_bloc.dart';
 import 'package:expenses_manager/presentation/home/ui/widgets/balance_card.dart';
-import 'package:expenses_manager/presentation/widgets/transaction_card.dart';
+import 'package:expenses_manager/presentation/home/ui/widgets/home_transaction_card.dart';
 import 'package:expenses_manager/utils/ui_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -150,7 +150,7 @@ class _MainScreen extends StatelessWidget {
                 ),
                 // aqui probablemente ira un bucle con un listView para que aparezcan las cosas
                 ...lastMovements.map((e) {
-                  return TransactionCard(transaction: e);
+                  return HomeTransactionCard(transaction: e);
                   //return MovementHome(movement: e);
                 }),
               ],

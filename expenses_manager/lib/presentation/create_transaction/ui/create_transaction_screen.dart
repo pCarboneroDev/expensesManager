@@ -1,7 +1,7 @@
 import 'package:expenses_manager/domain/models/category_model.dart';
 import 'package:expenses_manager/domain/models/movement_model.dart';
 import 'package:expenses_manager/presentation/create_transaction/bloc/create_transaction_bloc.dart';
-import 'package:expenses_manager/presentation/create_transaction/ui/widgets/CreateTransactionForm.dart';
+import 'package:expenses_manager/presentation/widgets/transaction_form/CreateTransactionForm.dart';
 import 'package:expenses_manager/utils/transaction_type.dart';
 import 'package:expenses_manager/utils/ui_state.dart';
 import 'package:flutter/material.dart';
@@ -81,7 +81,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Nueva Transacción'),
+        title: const Text('New Transaction'),
         centerTitle: true,
         elevation: 0,
       ),

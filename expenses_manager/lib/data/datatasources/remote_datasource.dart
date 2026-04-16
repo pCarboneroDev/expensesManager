@@ -174,11 +174,15 @@ class RemoteDatasource {
     TransactionModel transaction,
   ) async {
     try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        return Left(DataSourceException('No user found'));
+      }
       final response = await dio.put(
         'transactions/$transactionId',
         data: CreateTransactionDto(
           date: transaction.date,
-          userId: 'testid',
+          userId: user.uid,
           amount: transaction.amount,
           categoryId: transaction.category.id,
           type: transaction.type.name,

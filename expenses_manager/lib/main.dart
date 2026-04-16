@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:expenses_manager/di/dependendy_injection.dart';
 import 'package:expenses_manager/firebase_options.dart';
 import 'package:expenses_manager/presentation/create_transaction/bloc/create_transaction_bloc.dart';
@@ -17,10 +15,8 @@ import 'package:expenses_manager/presentation/update_transaction/bloc/update_tra
 import 'package:expenses_manager/presentation/update_transaction/ui/update_transaction_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:json_theme/json_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

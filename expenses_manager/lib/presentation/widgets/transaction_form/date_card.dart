@@ -1,4 +1,4 @@
-import 'package:expenses_manager/presentation/create_transaction/ui/widgets/date_modal.dart';
+import 'package:expenses_manager/presentation/widgets/transaction_form/date_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 

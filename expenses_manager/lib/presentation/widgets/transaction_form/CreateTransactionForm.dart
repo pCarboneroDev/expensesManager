@@ -1,9 +1,9 @@
 import 'package:expenses_manager/domain/models/category_model.dart';
 import 'package:expenses_manager/domain/models/movement_model.dart';
-import 'package:expenses_manager/presentation/create_transaction/ui/widgets/category_selector.dart';
-import 'package:expenses_manager/presentation/create_transaction/ui/widgets/date_card.dart';
-import 'package:expenses_manager/presentation/create_transaction/ui/widgets/amount_field.dart';
-import 'package:expenses_manager/presentation/create_transaction/ui/widgets/type_selector.dart';
+import 'package:expenses_manager/presentation/widgets/transaction_form/category_selector.dart';
+import 'package:expenses_manager/presentation/widgets/transaction_form/date_card.dart';
+import 'package:expenses_manager/presentation/widgets/transaction_form/amount_field.dart';
+import 'package:expenses_manager/presentation/widgets/transaction_form/type_selector.dart';
 import 'package:expenses_manager/presentation/transactions/bloc/transaction_bloc.dart';
 import 'package:expenses_manager/utils/transaction_type.dart';
 import 'package:flutter/material.dart';
@@ -118,7 +118,7 @@ class CreateTransactionForm extends StatelessWidget {
                 ),
               ),
               child: const Text(
-                'Guardar transacción',
+                'Save',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),

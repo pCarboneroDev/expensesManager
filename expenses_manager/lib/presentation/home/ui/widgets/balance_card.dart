@@ -5,7 +5,7 @@ class BalanceCard extends StatelessWidget {
   final double monthIncome;
   final double monthExpenses;
 
-  const BalanceCard({required this.monthIncome, required this.monthExpenses});
+  const BalanceCard({super.key, required this.monthIncome, required this.monthExpenses});
 
   @override
   Widget build(BuildContext context) {

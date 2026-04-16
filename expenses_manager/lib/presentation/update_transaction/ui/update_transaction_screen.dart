@@ -1,6 +1,6 @@
 import 'package:expenses_manager/domain/models/category_model.dart';
 import 'package:expenses_manager/domain/models/movement_model.dart';
-import 'package:expenses_manager/presentation/create_transaction/ui/widgets/CreateTransactionForm.dart';
+import 'package:expenses_manager/presentation/widgets/transaction_form/CreateTransactionForm.dart';
 import 'package:expenses_manager/presentation/update_transaction/bloc/update_transaction_bloc.dart';
 import 'package:expenses_manager/utils/transaction_type.dart';
 import 'package:expenses_manager/utils/ui_state.dart';
@@ -63,7 +63,7 @@ class _UpdateTransactionScreenState extends State<UpdateTransactionScreen> {
     BlocProvider.of<UpdateTransactionBloc>(context).add(UpdateTransactionAmount(amount));
   }
 
-  void createTransaction(TransactionModel transaction) {
+  void updateTransaction(TransactionModel transaction) {
     BlocProvider.of<UpdateTransactionBloc>(context).add(UpdateTransaction(transaction));
   }
 
@@ -120,7 +120,7 @@ class _UpdateTransactionScreenState extends State<UpdateTransactionScreen> {
                           LoadCategories(),
                         );
                       },
-                      child: const Text('Reintentar'),
+                      child: const Text('Try again'),
                     ),
                   ],
                 ),
@@ -134,12 +134,12 @@ class _UpdateTransactionScreenState extends State<UpdateTransactionScreen> {
                 selectedDate: state.date,
                 selectedCategory: state.category,
                 quantity: state.amount,
-              amountController: amountController,
+                amountController: amountController,
 
                 updateDate: updateDate,
                 updateCategory: updateCategory,
                 updateType: updateType,
-                create: createTransaction,
+                create: updateTransaction,
                 updateAmount: updateAmount,
               ),
               UIStatus.idle: const Center(child: Text('IDLE')),
