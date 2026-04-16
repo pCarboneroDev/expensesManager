@@ -16,21 +16,14 @@ class AmountField extends StatelessWidget {
     Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: ColorScheme.of(context).surfaceContainer,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.shade200,
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Quantity',
+            'Amount',
             style: TextStyle(fontSize: 14, color: Colors.grey),
           ),
           const SizedBox(height: 8),

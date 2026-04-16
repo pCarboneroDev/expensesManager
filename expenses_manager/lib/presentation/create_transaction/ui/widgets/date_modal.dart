@@ -10,8 +10,8 @@ class DateModal extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 300,
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: ColorScheme.of(context).surfaceContainer,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
@@ -25,7 +25,7 @@ class DateModal extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(
-                  'Seleccionar fecha',
+                  'Select a date',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 IconButton(
@@ -42,7 +42,7 @@ class DateModal extends StatelessWidget {
               lastDate: DateTime.now(),
               onDateChanged: (DateTime date) {
                 updateDate(date);
-                Navigator.pop(context, date);
+                //Navigator.pop(context, date);
               },
             ),
           ),

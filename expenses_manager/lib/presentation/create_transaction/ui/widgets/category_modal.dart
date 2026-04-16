@@ -17,8 +17,8 @@ class CategoryModal extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: MediaQuery.of(context).size.height * 0.6,
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: ColorScheme.of(context).surfaceContainer,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
@@ -69,14 +69,14 @@ class CategoryModal extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         updateCategory(category);
-        Navigator.pop(context);
+        Navigator.pop(context); // todo revisar para que no se cierre al escoger
       },
       child: Container(
         decoration: BoxDecoration(
           //color: isSelected ? category.color.withOpacity(0.1) : Colors.grey.shade50,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected ? Colors.blueAccent : Colors.grey.shade200,
+            color: isSelected ? ColorScheme.of(context).primary : Colors.grey.shade200,
             width: isSelected ? 2 : 1,
           ),
         ),
@@ -85,7 +85,7 @@ class CategoryModal extends StatelessWidget {
           children: [
             Icon(
               category.icon,
-              color: isSelected ? Colors.blueAccent : Colors.grey.shade600,
+              color: isSelected ? ColorScheme.of(context).primary : Colors.grey.shade600,
               size: 28,
             ),
             const SizedBox(height: 8),
@@ -93,7 +93,7 @@ class CategoryModal extends StatelessWidget {
               category.name,
               style: TextStyle(
                 fontSize: 12,
-                color: isSelected ? Colors.blueAccent : Colors.grey.shade600,
+                color: isSelected ? ColorScheme.of(context).primary : Colors.grey.shade600,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               ),
               textAlign: TextAlign.center,

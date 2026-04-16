@@ -9,42 +9,35 @@ class TypeSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.shade200,
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: _TypeOption(
-              selectedType: selectedType,
-              typeOption: TransactionType.expense,
-              icon: Icons.arrow_upward,
-              label: 'Expense',
-              color: Colors.red,
-              updateType: updateType
+    return Material(
+      color: ColorScheme.of(context).surfaceContainer,
+      borderRadius: BorderRadius.circular(16),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          children: [
+            Expanded(
+              child: _TypeOption(
+                selectedType: selectedType,
+                typeOption: TransactionType.expense,
+                icon: Icons.arrow_upward,
+                label: 'Expense',
+                color: ColorScheme.of(context).error,
+                updateType: updateType
+              ),
             ),
-          ),
-          Expanded(
-            child: _TypeOption(
-              selectedType: selectedType,
-              typeOption: TransactionType.income,
-              icon: Icons.arrow_downward,
-              label: 'Income',
-              color: Colors.green,
-              updateType: updateType
+            Expanded(
+              child: _TypeOption(
+                selectedType: selectedType,
+                typeOption: TransactionType.income,
+                icon: Icons.arrow_downward,
+                label: 'Income',
+                color: Colors.green,
+                updateType: updateType
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -64,10 +57,9 @@ class _TypeOption extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isSelected = selectedType == typeOption;
-    return GestureDetector(
-      onTap: () {
-        updateType(typeOption);
-      },
+    return InkWell(
+      borderRadius: BorderRadius.circular(12),
+      onTap: () => updateType(typeOption),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),

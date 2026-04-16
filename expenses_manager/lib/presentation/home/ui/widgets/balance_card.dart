@@ -31,13 +31,13 @@ class BalanceCard extends StatelessWidget {
                 _buildSummaryCard(
                   'Expenses',
                   numberFormat.format(monthExpenses),
-                  Colors.red,
+                  ColorScheme.of(context).error,
                 ),
                 _buildSummaryCard(
                   'Balance',
                   numberFormat.format(monthIncome - monthExpenses),
                   (monthIncome - monthExpenses) >= 0
-                      ? Colors.blue
+                      ? ColorScheme.of(context).primary
                       : Colors.orange,
                 ),
               ],
@@ -48,8 +48,8 @@ class BalanceCard extends StatelessWidget {
               value: monthIncome > 0
                   ? (monthExpenses / monthIncome).clamp(0.0, 1.0)
                   : 0.0,
-              backgroundColor: Colors.grey[300],
-              color: Colors.red,
+              //backgroundColor: Colors.grey[300],
+              color: ColorScheme.of(context).error,
               minHeight: 10,
             ),
             SizedBox(height: 10),

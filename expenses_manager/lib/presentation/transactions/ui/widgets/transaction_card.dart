@@ -12,7 +12,7 @@ class TransactionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       borderRadius: BorderRadius.circular(13),
-      color: ColorScheme.of(context).primaryContainer.withAlpha(80),
+      color: ColorScheme.of(context).surfaceContainer,
       child: InkWell(
         borderRadius: BorderRadius.circular(13),
         onTap: () {

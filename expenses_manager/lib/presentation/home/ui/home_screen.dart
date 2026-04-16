@@ -36,14 +36,13 @@ class _HomeScreenState extends State<HomeScreen> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(color: Colors.blue),
+            DrawerHeader(
               child: Text('Drawer Header'),
             ),
             ListTile(title: const Text('Settings'), leading: Icon(Icons.settings), onTap: () {}),
             ListTile(title: const Text('Account'), leading: Icon(FontAwesomeIcons.person), onTap: () {}),
             ListTile(
-              tileColor: Colors.red,
+              tileColor: ColorScheme.of(context).error,
               title: const Text('SignOut'), 
               leading: Icon(FontAwesomeIcons.arrowRightFromBracket), 
               onTap: () {
@@ -64,9 +63,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             Navigator.pushReplacementNamed(context, 'login');
                           },
                           style: TextButton.styleFrom(
-                            foregroundColor: Colors.red,
+                            foregroundColor: ColorScheme.of(context).errorContainer,
                           ),
-                          child: const Text('Sign out'),
+                          child: Text('Sign out', style: TextStyle(color: ColorScheme.of(context).onErrorContainer)),
                         ),
                       ],
                     );
