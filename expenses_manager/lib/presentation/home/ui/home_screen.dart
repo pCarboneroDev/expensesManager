@@ -92,6 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
               monthExpenses: state.monthExpenses,
               monthIncome: state.monthIncome,
               lastMovements: state.lastMovements,
+              load: load,
             ),
           };
           return status[state.uiState.status] ?? Container();
@@ -105,11 +106,13 @@ class _MainScreen extends StatelessWidget {
   final double monthIncome;
   final double monthExpenses;
   final List<TransactionModel> lastMovements;
+  final Function load;
 
   const _MainScreen({
     required this.monthIncome,
     required this.monthExpenses,
     required this.lastMovements,
+    required this.load
   });
 
   @override
@@ -131,14 +134,14 @@ class _MainScreen extends StatelessWidget {
 
           GestureDetector(
             onTap: () {
-              Navigator.pushNamed(context, 'movements');
+              Navigator.pushNamed(context, 'transactions');
             },
             child: Column(
               children: [
                 Row(
                   children: [
                     Text(
-                      'Last movements',
+                      'Last transactions',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold
@@ -150,7 +153,7 @@ class _MainScreen extends StatelessWidget {
                 ),
                 // aqui probablemente ira un bucle con un listView para que aparezcan las cosas
                 ...lastMovements.map((e) {
-                  return HomeTransactionCard(transaction: e);
+                  return HomeTransactionCard(transaction: e, load: load);
                   //return MovementHome(movement: e);
                 }),
               ],

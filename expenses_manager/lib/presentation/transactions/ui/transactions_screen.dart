@@ -74,6 +74,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> with RouteAware
                 TransactionList(
                   transactionList: state.transactionList,
                   deleteTransaction: deleteTransaction,
+                  load: loadTransactions
                 ),
               ],
             ),

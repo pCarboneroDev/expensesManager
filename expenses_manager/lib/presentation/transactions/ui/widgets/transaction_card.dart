@@ -5,9 +5,8 @@ import 'package:flutter/material.dart';
 
 class TransactionCard extends StatelessWidget {
   final TransactionModel transaction;
-  
-  // Cache colors or use a provider/extension method
-  const TransactionCard({super.key, required this.transaction});
+  final Function load;
+  const TransactionCard({super.key, required this.transaction, required this.load});
 
   @override
   Widget build(BuildContext context) {
@@ -18,8 +17,8 @@ class TransactionCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(13),
       color: colorScheme.surfaceContainerLow,
       child: InkWell(
-        borderRadius: BorderRadius.circular(13), // Match Material's radius
-        onTap: () => _navigateToUpdate(context),
+        borderRadius: BorderRadius.circular(13),
+        onTap: () => Navigator.pushNamed(context, 'update_transaction', arguments: transaction).then((_) => load()),
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Row(
@@ -37,15 +36,7 @@ class TransactionCard extends StatelessWidget {
       ),
     );
   }
-  
-  void _navigateToUpdate(BuildContext context) {
-    Navigator.pushNamed(
-      context,
-      'update_transaction',
-      arguments: transaction,
-    );
-  }
-  
+
   Widget _buildCategoryIcon(Color color) {
     return Icon(
       transaction.category.icon,

@@ -6,8 +6,9 @@ import 'package:flutter/material.dart';
 
 class HomeTransactionCard extends StatelessWidget {
   final TransactionModel transaction;
+  final Function load;
 
-  const HomeTransactionCard({super.key, required this.transaction});
+  const HomeTransactionCard({super.key, required this.transaction, required this.load});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +20,7 @@ class HomeTransactionCard extends StatelessWidget {
             context,
             'update_transaction',
             arguments: transaction,
-          );
+          ).then((_) => load());
         },
         child: Padding(
           padding: const EdgeInsets.all(12),

@@ -7,8 +7,9 @@ import 'package:flutter/material.dart';
 class TransactionList extends StatelessWidget {
   final Map<DateTime, List<TransactionModel>> transactionList;
   final void Function(int) deleteTransaction;
+  final Function load;
   
-  const TransactionList({super.key, required this.transactionList, required this.deleteTransaction});
+  const TransactionList({super.key, required this.transactionList, required this.deleteTransaction, required this.load});
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +51,7 @@ class TransactionList extends StatelessWidget {
                         ),
                       );
                     },
-                    child: TransactionCard(transaction: transaction),
+                    child: TransactionCard(transaction: transaction, load: load),
                   ),
                 );
               }),
