@@ -32,9 +32,9 @@ void main() async {
 
   await initGetIt();
 
-  final themeStr = await rootBundle.loadString('assets/appainter_theme.json');
-  final themeJson = jsonDecode(themeStr);
-  final theme = ThemeDecoder.decodeThemeData(themeJson)!;
+  // final themeStr = await rootBundle.loadString('assets/appainter_theme.json');
+  // final themeJson = jsonDecode(themeStr);
+  // final theme = ThemeDecoder.decodeThemeData(themeJson)!;
 
   runApp(
     MultiBlocProvider(
@@ -46,21 +46,21 @@ void main() async {
         BlocProvider(create: (context) => getIt<LoginBloc>()),
         BlocProvider(create: (context) => getIt<InsightsBloc>())
       ], 
-      child: MyApp(theme: theme)
+      child: MyApp()
     )
   );
 }
 
 class MyApp extends StatelessWidget {
-  final ThemeData theme;
-  const MyApp({super.key, required this.theme});
+  //final ThemeData theme;
+  const MyApp({super.key});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: theme,
+      theme: ThemeData.dark(),
       routes: {
         'root': (context) => Root(),
         'movements': (context) => TransactionsScreen(),

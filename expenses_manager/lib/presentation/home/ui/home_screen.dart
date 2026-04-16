@@ -1,7 +1,7 @@
 import 'package:expenses_manager/domain/models/movement_model.dart';
 import 'package:expenses_manager/presentation/home/bloc/home_bloc.dart';
 import 'package:expenses_manager/presentation/home/ui/widgets/balance_card.dart';
-import 'package:expenses_manager/presentation/home/ui/widgets/movements_home.dart';
+import 'package:expenses_manager/presentation/widgets/transaction_card.dart';
 import 'package:expenses_manager/utils/ui_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,6 +18,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    load();
+  }
+  void load(){
     BlocProvider.of<HomeBloc>(context).add(LoadLastMovementsEvent());
   }
 
@@ -75,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () { Navigator.pushNamed(context, 'create_transaction'); },
+        onPressed: () { Navigator.pushNamed(context, 'create_transaction').then((_) => load()); },
         child: Icon(Icons.add),
       ),
       body: BlocBuilder<HomeBloc, HomeState>(
@@ -120,8 +123,7 @@ class _MainScreen extends StatelessWidget {
             'Month balance',
             style: TextStyle(
               fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.black45,
+              fontWeight: FontWeight.bold
             ),
           ),
           BalanceCard(monthExpenses: monthExpenses, monthIncome: monthIncome),
@@ -140,17 +142,17 @@ class _MainScreen extends StatelessWidget {
                       'Last movements',
                       style: TextStyle(
                         fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black45,
+                        fontWeight: FontWeight.bold
                       ),
                     ),
                     Spacer(),
-                    Icon(Icons.keyboard_arrow_right, color: Colors.black45),
+                    Icon(Icons.keyboard_arrow_right),
                   ],
                 ),
                 // aqui probablemente ira un bucle con un listView para que aparezcan las cosas
                 ...lastMovements.map((e) {
-                  return MovementHome(movement: e);
+                  return TransactionCard(transaction: e);
+                  //return MovementHome(movement: e);
                 }),
               ],
             ),

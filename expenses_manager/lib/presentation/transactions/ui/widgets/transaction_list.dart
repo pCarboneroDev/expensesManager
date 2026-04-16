@@ -26,13 +26,14 @@ class TransactionList extends StatelessWidget {
               ...dayTransactions.map((transaction) {
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Dismissible(
+                  child: Dismissible( //todo creo que si esto lo pones en el card se ve bien 
                     key: Key(transaction.id.toString()),
                     background: Container(
                       decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.all(Radius.circular(15)),
+                        //color: Colors.red,
+                        borderRadius: BorderRadius.all(Radius.circular(13)),
                       ),
+                      child: Row(children: [Spacer(), Icon(Icons.delete_outline, color: ColorScheme.of(context).error,)],),
                     ),
                     confirmDismiss: (direction) {
                       return showDialog(
@@ -41,7 +42,7 @@ class TransactionList extends StatelessWidget {
                       );
                     },
                     onDismissed: (direction) {
-                      deleteTransaction(transaction.id); //! en el bloc se actualiza el estado y pone los elementos de nuevo, hay que hacer que no lo haga y siga funcionando correctamente
+                      deleteTransaction(transaction.id);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text('Deleted successfully'),

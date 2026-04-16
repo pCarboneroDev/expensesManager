@@ -1,4 +1,5 @@
 import 'package:expenses_manager/presentation/insights/bloc/insights_bloc.dart';
+import 'package:expenses_manager/utils/category_color.dart';
 import 'package:expenses_manager/utils/ui_state.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +49,6 @@ class _InsightsMainScreen extends StatelessWidget {
   final Map<String, double> expensesByCategory;
 
   const _InsightsMainScreen({
-    super.key,
     required this.totalIncome,
     required this.totalExpense,
     required this.expensesByCategory
@@ -60,46 +60,13 @@ class _InsightsMainScreen extends StatelessWidget {
     return ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
-          // 1. Tarjeta resumen (Gastado vs Ingresado)
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                children: [
-                  Text('Resumen del mes', style: Theme.of(context).textTheme.titleLarge),
-                  SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _buildSummaryCard('💰 Ingresos', numberFormat.format(totalIncome), Colors.green),
-                      _buildSummaryCard('💸 Gastos', numberFormat.format(totalExpense), Colors.red),
-                      _buildSummaryCard('📊 Balance', numberFormat.format(totalIncome - totalExpense), 
-                                        (totalIncome - totalExpense) >= 0 ? Colors.blue : Colors.orange),
-                    ],
-                  ),
-                  SizedBox(height: 20),
-                  // Indicador de porcentaje gastado vs ingresado
-                  LinearProgressIndicator(
-                    value: totalIncome > 0 ? (totalExpense / totalIncome).clamp(0.0, 1.0) : 0.0,
-                    backgroundColor: Colors.grey[300],
-                    color: Colors.red,
-                    minHeight: 10,
-                  ),
-                  SizedBox(height: 10),
-                  Text('Has gastado el ${((totalExpense / totalIncome) * 100).toStringAsFixed(1)}% de tus ingresos.'),
-                ],
-              ),
-            ),
-          ),
-          SizedBox(height: 20),
-          // 2. Gráfica de gastos por categoría
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Distribución de Gastos', style: Theme.of(context).textTheme.titleLarge),
+                  Text('Expenses distribution', style: Theme.of(context).textTheme.titleLarge),
                   SizedBox(height: 20),
                   expensesByCategory.isEmpty 
                       ? Container(height: 200, child: Center(child: Text('No hay datos de gastos')))
@@ -121,7 +88,7 @@ class _InsightsMainScreen extends StatelessWidget {
                       return Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Container(width: 16, height: 16, color: _getCategoryColor(category)),
+                          Container(width: 16, height: 16, color: getCategoryColor(category)),
                           SizedBox(width: 5),
                           Text('$category (${numberFormat.format(expensesByCategory[category])})'),
                         ],
@@ -132,19 +99,22 @@ class _InsightsMainScreen extends StatelessWidget {
               ),
             ),
           ),
+
+
+          //------------------------------------------------------------------------------------------------
+
+          // Card(
+          //   child: Padding(
+          //     padding: const EdgeInsetsGeometry.all(8),
+          //     child: Column(
+          //       children: [
+          //         Chart
+          //       ],
+          //     ),
+          //   ),
+          // )
         ],
       );
-  }
-
-  // Helper para construir las tarjetas pequeñas de resumen
-  Widget _buildSummaryCard(String title, String amount, Color color) {
-    return Column(
-      children: [
-        Text(title, style: TextStyle(fontSize: 14, color: Colors.grey[600])),
-        SizedBox(height: 8),
-        Text(amount, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: color)),
-      ],
-    );
   }
 
   // Convierte el Map de categorías en una lista de PieChartSectionData
@@ -156,21 +126,11 @@ class _InsightsMainScreen extends StatelessWidget {
       return PieChartSectionData(
         value: entry.value,
         title: '${percentage.toStringAsFixed(0)}%',
-        color: _getCategoryColor(entry.key),
+        color: getCategoryColor(entry.key),
         radius: 80,
         titleStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
       );
     }).toList();
-  }
-
-  // Asigna un color a cada categoría (puedes mejorarlo)
-  Color _getCategoryColor(String category) {
-    switch (category) {
-      case 'Food': return Colors.orange;
-      case 'Clothing': return Colors.blue;
-      case 'Entertaiment': return Colors.purple;
-      default: return Colors.grey;
-    }
   }
 }
 

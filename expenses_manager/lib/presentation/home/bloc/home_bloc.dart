@@ -49,7 +49,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           emit(
             state.copyWith(
               uiState: UIState.success(),
-              lastMovements: movements.length > 10 ? movements.sublist(movements.length - 10) : List.from(movements),
+              lastMovements: movements.length > 3 ? movements.sublist(movements.length - 3) : List.from(movements),
               monthExpenses: expense,
               monthIncome: income,
             ),

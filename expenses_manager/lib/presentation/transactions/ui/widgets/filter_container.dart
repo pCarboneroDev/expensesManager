@@ -26,7 +26,6 @@ class FilterContainer extends StatelessWidget {
       height: 60,
       padding: EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: ColorScheme.light().surfaceContainer,
         boxShadow: [
           BoxShadow(
             color: const Color.fromARGB(31, 0, 0, 0),

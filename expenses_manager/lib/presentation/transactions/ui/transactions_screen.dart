@@ -16,6 +16,10 @@ class _TransactionsScreenState extends State<TransactionsScreen> with RouteAware
   @override
   void initState() {
     super.initState();
+    loadTransactions();
+  }
+
+  void loadTransactions(){
     BlocProvider.of<TransactionBloc>(context).add(OnLoadMonthTransactions());
   }
   
@@ -39,7 +43,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> with RouteAware
       appBar: AppBar(title: Text('Your transactions')),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.pushNamed(context, 'create_transaction');
+          Navigator.pushNamed(context, 'create_transaction').then((context) => loadTransactions());
         },
         child: Icon(Icons.add),
       ),

@@ -10,7 +10,7 @@ class DateLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      color: Colors.grey.shade200,
+      color: ColorScheme.of(context).secondary.withAlpha(20),
       width: double.infinity,
       child: Text(
         formatDate(date),
