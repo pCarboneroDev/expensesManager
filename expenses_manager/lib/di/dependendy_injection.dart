@@ -69,5 +69,5 @@ Future<void> initGetIt() async {
   getIt.registerSingleton(CreateTransactionBloc(getIt(), getIt()));
   getIt.registerSingleton(UpdateTransactionBloc(getIt(), getIt()));
   getIt.registerSingleton(LoginBloc(getIt(), getIt(), getIt(), getIt()));
-  getIt.registerSingleton(InsightsBloc(getIt(), getIt()));
+  getIt.registerSingleton(InsightsBloc(getIt(), getIt(), getIt()));
 }
