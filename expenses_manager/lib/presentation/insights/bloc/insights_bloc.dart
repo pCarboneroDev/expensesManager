@@ -6,6 +6,7 @@ import 'package:expenses_manager/domain/models/category_model.dart';
 import 'package:expenses_manager/domain/models/movement_model.dart';
 import 'package:expenses_manager/domain/models/params/filter_transactions_params.dart';
 import 'package:expenses_manager/domain/usecases/categories/get_categories_usecase.dart';
+import 'package:expenses_manager/domain/usecases/prediction/predict_usecase.dart';
 import 'package:expenses_manager/domain/usecases/transactions/get_filtered_transactions_usecase.dart';
 import 'package:expenses_manager/domain/usecases/transactions/get_last_transactions_usecase.dart';
 import 'package:expenses_manager/utils/transaction_type.dart';
@@ -70,12 +71,14 @@ class InsightsBloc extends Bloc<InsightsEvent, InsightsState> {
   final GetCategoriesUsecase getCategoriesUsecase;
   final GetLastTransactionsUsecase getLastTransactionsUsecase;
   final GetFilteredTransactionsUsecase getFilteredTransactionsUsecase;
+  final PredictUsecase predictUsecase;
 
 
   InsightsBloc(
     this.getCategoriesUsecase,
     this.getLastTransactionsUsecase,
     this.getFilteredTransactionsUsecase,
+    this.predictUsecase
   ) : super(
         InsightsState(
           categories: [],
@@ -86,6 +89,8 @@ class InsightsBloc extends Bloc<InsightsEvent, InsightsState> {
           finalIncome: 0,
           expensesMonth: {},
           expensesDay: {},
+          prediction: 0,
+          predictionLoading: false
         ),
       ) {
     on<InsightsEvent>((event, emit) {
@@ -97,7 +102,8 @@ class InsightsBloc extends Bloc<InsightsEvent, InsightsState> {
         state.copyWith(
           uiState: UIState.loading(),
           expensesMonth: state.initialExpensesMonth(),
-          expensesDay: state.initialExpensesDay()
+          expensesDay: state.initialExpensesDay(),
+          predictionLoading: true
         ),
       );
       Map<String, double> map = state.expensesMonth;
@@ -143,12 +149,20 @@ class InsightsBloc extends Bloc<InsightsEvent, InsightsState> {
           emit(state.copyWith(expensesMonth: map, uiState: UIState.success(), expensesDay: mapDay));
         },
       );
+
+
+      final predictionResult = await predictUsecase.call(null);
+
+      predictionResult.fold(
+        (l) => emit(state.copyWith(uiState: UIState.error(l.message))),
+        (r) => emit(state.copyWith(predictionLoading: false, prediction: r)),
+      );
     });
 
     on<LoadCategoriesEvent>((event, emit) async {
       emit(state.copyWith(uiState: UIState.loading()));
       final categoriesFuture = getCategoriesUsecase.call(null);
-      final lastFuture = getLastTransactionsUsecase.call(null);
+      final lastFuture = getFilteredTransactionsUsecase.callRaw(FilterTransactionsParams(date: 'month'));
 
       final results = await Future.wait([categoriesFuture, lastFuture]);
 

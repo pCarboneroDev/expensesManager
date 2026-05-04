@@ -11,6 +11,9 @@ class InsightsState extends Equatable {
   final Map<String, double> expensesMonth;
   final Map<String, double> expensesDay;
 
+  final double prediction;
+  final bool predictionLoading;
+
   const InsightsState({
     required this.uiState,
     required this.categories,
@@ -20,6 +23,8 @@ class InsightsState extends Equatable {
     required this.finalIncome,
     required this.expensesMonth,
     required this.expensesDay,
+    required this.prediction,
+    required this.predictionLoading,
   });
 
   Map<String, double> initialExpensesMonth() {
@@ -65,7 +70,9 @@ class InsightsState extends Equatable {
     double? finalIncome,
     double? finalExpense,
     Map<String, double>? expensesMonth,
-    Map<String, double>? expensesDay
+    Map<String, double>? expensesDay,
+    double? prediction,
+    bool? predictionLoading 
   }) => InsightsState(
     categories: categories ?? this.categories,
     uiState: uiState ?? this.uiState,
@@ -74,7 +81,9 @@ class InsightsState extends Equatable {
     finalExpense: finalExpense ?? this.finalExpense,
     finalIncome: finalIncome ?? this.finalIncome,
     expensesMonth: expensesMonth ?? this.expensesMonth,
-    expensesDay: expensesDay ?? this.expensesDay
+    expensesDay: expensesDay ?? this.expensesDay,
+    prediction: prediction ?? this.prediction,
+    predictionLoading: predictionLoading ?? this.predictionLoading
   );
 
   @override
@@ -86,6 +95,8 @@ class InsightsState extends Equatable {
     finalIncome,
     finalExpense,
     expensesMonth,
-    expensesDay
+    expensesDay,
+    prediction,
+    predictionLoading
   ];
 }

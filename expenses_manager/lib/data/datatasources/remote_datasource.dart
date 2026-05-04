@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:expenses_manager/data/entities/category_entity.dart';
 import 'package:expenses_manager/data/entities/create_transaction_dto.dart';
+import 'package:expenses_manager/data/entities/prediction_response.dart';
 import 'package:expenses_manager/data/entities/transaction_entity.dart';
 import 'package:expenses_manager/data/entities/user_entity.dart';
 import 'package:expenses_manager/domain/exceptions/failure.dart';
@@ -223,4 +224,31 @@ class RemoteDatasource {
       return Left(DataSourceException(error.toString()));
     }
   }
+
+
+  Future<Either<Failure, double>> predict() async {
+    try{
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        return Left(DataSourceException('No user found'));
+      }
+
+      final response = await dio.get(
+        'prediction',
+        queryParameters: {'user_id': user.uid},
+      );
+
+      if (response.statusCode == 200) {
+        final PredictionResponse prediction = PredictionResponse.fromMap(response.data);
+
+        return Right(prediction.prediction);
+      } else {
+        return Left(DataSourceException(response.statusMessage.toString()));
+      }
+    }
+    catch (error) {
+      return Left(DataSourceException(error.toString()));
+    }
+  }
+
 }

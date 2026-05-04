@@ -33,23 +33,23 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<LoadLastMovementsEvent>((event, emit) async {
       emit(state.copyWith(uiState: UIState.loading()));
       //final result = await getLastMovementsUsecase.call(null); // todo ver si es mejor quitar null
-      final result = await getFilteredTransactionsUsecase.callRaw(FilterTransactionsParams(date: DateTime.now().toString()));
+      final result = await getFilteredTransactionsUsecase.callRaw(FilterTransactionsParams(date: 'month'));
 
       result.fold(
         (fail) => emit(state.copyWith(uiState: UIState.error(fail.message))),
-        (movements) {
-          final income = movements
-              .where((e) => (e.type == TransactionType.income /*&& e.date.month == DateTime.now().month*/))
+        (transactions) {
+          final income = transactions
+              .where((e) => (e.type == TransactionType.income))
               .fold(0.0, (sum, e) => sum += e.amount);
 
-          final expense = movements
-              .where((e) => e.type == TransactionType.expense)
+          final expense = transactions
+              .where((e) => (e.type == TransactionType.expense))
               .fold(0.0, (sum, e) => sum += e.amount);
 
           emit(
             state.copyWith(
               uiState: UIState.success(),
-              lastMovements: movements.length > 3 ? movements.sublist(movements.length - 3) : List.from(movements),
+              lastMovements: transactions.length > 3 ? transactions.sublist(transactions.length - 3) : List.from(transactions),
               monthExpenses: expense,
               monthIncome: income,
             ),
