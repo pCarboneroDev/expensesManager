@@ -73,12 +73,11 @@ class InsightsBloc extends Bloc<InsightsEvent, InsightsState> {
   final GetFilteredTransactionsUsecase getFilteredTransactionsUsecase;
   final PredictUsecase predictUsecase;
 
-
   InsightsBloc(
     this.getCategoriesUsecase,
     this.getLastTransactionsUsecase,
     this.getFilteredTransactionsUsecase,
-    this.predictUsecase
+    this.predictUsecase,
   ) : super(
         InsightsState(
           categories: [],
@@ -90,7 +89,7 @@ class InsightsBloc extends Bloc<InsightsEvent, InsightsState> {
           expensesMonth: {},
           expensesDay: {},
           prediction: 0,
-          predictionLoading: false
+          predictionLoading: false,
         ),
       ) {
     on<InsightsEvent>((event, emit) {
@@ -103,9 +102,10 @@ class InsightsBloc extends Bloc<InsightsEvent, InsightsState> {
           uiState: UIState.loading(),
           expensesMonth: state.initialExpensesMonth(),
           expensesDay: state.initialExpensesDay(),
-          predictionLoading: true
+          predictionLoading: true,
         ),
       );
+      List<TransactionModel> monthT = [];
       Map<String, double> map = state.expensesMonth;
       Map<String, double> mapDay = state.expensesDay;
 
@@ -117,6 +117,9 @@ class InsightsBloc extends Bloc<InsightsEvent, InsightsState> {
         (l) => emit(state.copyWith(uiState: UIState.error(l.message))),
         (transactions) {
           final now = DateTime.now();
+
+          monthT = transactions.where((e) => e.date.month == DateTime.now().month).toList();
+
           final currentWeekStart = now.subtract(
             Duration(days: now.weekday - 1),
           );
@@ -146,23 +149,36 @@ class InsightsBloc extends Bloc<InsightsEvent, InsightsState> {
               }
             }
           }
-          emit(state.copyWith(expensesMonth: map, uiState: UIState.success(), expensesDay: mapDay));
+          emit(
+            state.copyWith(
+              expensesMonth: map,
+              uiState: UIState.success(),
+              expensesDay: mapDay,
+            ),
+          );
         },
       );
 
 
-      final predictionResult = await predictUsecase.call(null);
+      if (monthT.isNotEmpty) {
+        final predictionResult = await predictUsecase.call(null);
 
-      predictionResult.fold(
-        (l) => emit(state.copyWith(uiState: UIState.error(l.message))),
-        (r) => emit(state.copyWith(predictionLoading: false, prediction: r)),
-      );
+        predictionResult.fold(
+          (l) => emit(state.copyWith(uiState: UIState.error(l.message))),
+          (r) => emit(state.copyWith(predictionLoading: false, prediction: r)),
+        );
+      }
+      else{
+        emit(state.copyWith(predictionLoading: false));
+      }
     });
 
     on<LoadCategoriesEvent>((event, emit) async {
       emit(state.copyWith(uiState: UIState.loading()));
       final categoriesFuture = getCategoriesUsecase.call(null);
-      final lastFuture = getFilteredTransactionsUsecase.callRaw(FilterTransactionsParams(date: 'month'));
+      final lastFuture = getFilteredTransactionsUsecase.callRaw(
+        FilterTransactionsParams(date: 'month'),
+      );
 
       final results = await Future.wait([categoriesFuture, lastFuture]);
 

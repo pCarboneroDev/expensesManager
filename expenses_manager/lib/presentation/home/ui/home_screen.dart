@@ -6,6 +6,7 @@ import 'package:expenses_manager/utils/ui_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:lottie/lottie.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,7 +21,8 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     load();
   }
-  void load(){
+
+  void load() {
     BlocProvider.of<HomeBloc>(context).add(LoadLastMovementsEvent());
   }
 
@@ -36,15 +38,21 @@ class _HomeScreenState extends State<HomeScreen> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            DrawerHeader(
-              child: Text('Drawer Header'),
+            DrawerHeader(child: Text('Drawer Header')),
+            ListTile(
+              title: const Text('Settings'),
+              leading: Icon(Icons.settings),
+              onTap: () {},
             ),
-            ListTile(title: const Text('Settings'), leading: Icon(Icons.settings), onTap: () {}),
-            ListTile(title: const Text('Account'), leading: Icon(FontAwesomeIcons.person), onTap: () {}),
+            ListTile(
+              title: const Text('Account'),
+              leading: Icon(FontAwesomeIcons.person),
+              onTap: () {},
+            ),
             ListTile(
               tileColor: ColorScheme.of(context).error,
-              title: const Text('SignOut'), 
-              leading: Icon(FontAwesomeIcons.arrowRightFromBracket), 
+              title: const Text('SignOut'),
+              leading: Icon(FontAwesomeIcons.arrowRightFromBracket),
               onTap: () {
                 showDialog(
                   context: context,
@@ -63,21 +71,33 @@ class _HomeScreenState extends State<HomeScreen> {
                             Navigator.pushReplacementNamed(context, 'login');
                           },
                           style: TextButton.styleFrom(
-                            foregroundColor: ColorScheme.of(context).errorContainer,
+                            foregroundColor: ColorScheme.of(
+                              context,
+                            ).errorContainer,
                           ),
-                          child: Text('Sign out', style: TextStyle(color: ColorScheme.of(context).onErrorContainer)),
+                          child: Text(
+                            'Sign out',
+                            style: TextStyle(
+                              color: ColorScheme.of(context).onErrorContainer,
+                            ),
+                          ),
                         ),
                       ],
                     );
                   },
                 );
               },
-            )
+            ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () { Navigator.pushNamed(context, 'create_transaction').then((_) => load()); },
+        onPressed: () {
+          Navigator.pushNamed(
+            context,
+            'create_transaction',
+          ).then((_) => load());
+        },
         child: Icon(Icons.add),
       ),
       body: BlocBuilder<HomeBloc, HomeState>(
@@ -112,7 +132,7 @@ class _MainScreen extends StatelessWidget {
     required this.monthIncome,
     required this.monthExpenses,
     required this.lastMovements,
-    required this.load
+    required this.load,
   });
 
   @override
@@ -123,10 +143,7 @@ class _MainScreen extends StatelessWidget {
         children: [
           Text(
             'Month balance',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold
-            ),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           BalanceCard(monthExpenses: monthExpenses, monthIncome: monthIncome),
 
@@ -144,7 +161,7 @@ class _MainScreen extends StatelessWidget {
                       'Last transactions',
                       style: TextStyle(
                         fontSize: 20,
-                        fontWeight: FontWeight.bold
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     Spacer(),
@@ -152,10 +169,16 @@ class _MainScreen extends StatelessWidget {
                   ],
                 ),
                 // aqui probablemente ira un bucle con un listView para que aparezcan las cosas
-                ...lastMovements.map((e) {
-                  return HomeTransactionCard(transaction: e, load: load);
-                  //return MovementHome(movement: e);
-                }),
+                if (lastMovements.isEmpty)
+                  ...[
+                    Lottie.asset("assets/lottiefiles/Searching.json"),
+                    Text("There's no transactions in the current month")
+                  ]
+                else
+                  ...lastMovements.map((e) {
+                    return HomeTransactionCard(transaction: e, load: load);
+                    //return MovementHome(movement: e);
+                  }),
               ],
             ),
           ),

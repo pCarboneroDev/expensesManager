@@ -7,6 +7,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 
 class InsightsScreen extends StatefulWidget {
   const InsightsScreen({Key? key}) : super(key: key);
@@ -159,6 +160,27 @@ class _InsightsMainScreen extends StatelessWidget {
                           ),
                         );
                       } else {
+                        if (prediction == 0) {
+                          return Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            margin: const EdgeInsets.all(16),
+                            child: Padding(
+                              padding: const EdgeInsets.all(20.0),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    "There is not enough data to perform the prediction.", 
+                                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold), 
+                                    textAlign: TextAlign.center
+                                  ),
+                                  Lottie.asset("assets/lottiefiles/Searching.json")
+                                ],
+                              ),
+                            ),
+                          );
+                        }
                         return PredictionCard(
                           primary: primary,
                           prediction: prediction,
