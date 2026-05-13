@@ -50,8 +50,6 @@ class FilterContainer extends StatelessWidget {
           ),
           SizedBox(width: 20),
           DropdownButton(
-            dropdownColor: ColorScheme.light().onPrimaryContainer,
-
             value: selectedCategory,
             items: categories.map<DropdownMenuItem>((value) {
               return DropdownMenuItem(value: value.id, child: Text(value.name));

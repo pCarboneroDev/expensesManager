@@ -53,9 +53,13 @@ class BalanceCard extends StatelessWidget {
               minHeight: 10,
             ),
             SizedBox(height: 10),
-            Text(
-              'You have spent ${((monthExpenses / monthIncome) * 100).toStringAsFixed(1)}% of your incomes.',
-            ),
+            monthIncome > 0
+                ? Text(
+                    'You have spent ${((monthExpenses / monthIncome) * 100).toStringAsFixed(1)}% of your incomes.',
+                  )
+                : Text(
+                    """There are no incomes recorded yet!""",
+                  ),
           ],
         ),
       ),

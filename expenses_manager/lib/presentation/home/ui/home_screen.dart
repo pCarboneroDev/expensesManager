@@ -38,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            DrawerHeader(child: Text('Drawer Header')),
+            DrawerHeader(child: Image(image: AssetImage("assets/logo_expense.png"))),
             ListTile(
               title: const Text('Settings'),
               leading: Icon(Icons.settings),
