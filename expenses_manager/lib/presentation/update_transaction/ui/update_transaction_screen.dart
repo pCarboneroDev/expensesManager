@@ -2,6 +2,7 @@ import 'package:expenses_manager/domain/models/category_model.dart';
 import 'package:expenses_manager/domain/models/movement_model.dart';
 import 'package:expenses_manager/presentation/widgets/transaction_form/CreateTransactionForm.dart';
 import 'package:expenses_manager/presentation/update_transaction/bloc/update_transaction_bloc.dart';
+import 'package:expenses_manager/utils/operation_state.dart';
 import 'package:expenses_manager/utils/transaction_type.dart';
 import 'package:expenses_manager/utils/ui_state.dart';
 import 'package:flutter/material.dart';
@@ -31,7 +32,8 @@ class _UpdateTransactionScreenState extends State<UpdateTransactionScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    transaction = ModalRoute.of(context)!.settings.arguments as TransactionModel;
+    transaction =
+        ModalRoute.of(context)!.settings.arguments as TransactionModel;
     final state = context.watch<UpdateTransactionBloc>().state;
     _updateControllerFromState(state);
   }
@@ -46,7 +48,9 @@ class _UpdateTransactionScreenState extends State<UpdateTransactionScreen> {
   }
 
   void updateDate(DateTime date) {
-    BlocProvider.of<UpdateTransactionBloc>(context).add(UpdateTransactionDate(date));
+    BlocProvider.of<UpdateTransactionBloc>(
+      context,
+    ).add(UpdateTransactionDate(date));
   }
 
   void updateCategory(CategoryModel category) {
@@ -56,15 +60,21 @@ class _UpdateTransactionScreenState extends State<UpdateTransactionScreen> {
   }
 
   void updateType(TransactionType type) {
-    BlocProvider.of<UpdateTransactionBloc>(context).add(UpdateTransactionType(type));
+    BlocProvider.of<UpdateTransactionBloc>(
+      context,
+    ).add(UpdateTransactionType(type));
   }
 
-    void updateAmount(double amount) {
-    BlocProvider.of<UpdateTransactionBloc>(context).add(UpdateTransactionAmount(amount));
+  void updateAmount(double amount) {
+    BlocProvider.of<UpdateTransactionBloc>(
+      context,
+    ).add(UpdateTransactionAmount(amount));
   }
 
   void updateTransaction(TransactionModel transaction) {
-    BlocProvider.of<UpdateTransactionBloc>(context).add(UpdateTransaction(transaction));
+    BlocProvider.of<UpdateTransactionBloc>(
+      context,
+    ).add(UpdateTransaction(transaction));
   }
 
   @override
@@ -96,7 +106,25 @@ class _UpdateTransactionScreenState extends State<UpdateTransactionScreen> {
             bloc.add(UpdateTransactionId(transaction!.id));
           }
         },
-        child: BlocBuilder<UpdateTransactionBloc, UpdateTransactionState>(
+        child: BlocConsumer<UpdateTransactionBloc, UpdateTransactionState>(
+          listener: (context, state) {
+            if (state.operationState == OperationState.success ||
+                state.operationState == OperationState.failure) {
+              String message = (state.operationState == OperationState.success)
+                  ? '${state.type == TransactionType.expense ? "Expense" : "Income"} updated'
+                  : '${state.type == TransactionType.expense ? "Expense" : "Income"} not updated';
+
+              Color color = (state.operationState == OperationState.success)
+                  ? Colors.green
+                  : Colors.red;
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(message), backgroundColor: color),
+              );
+
+              Navigator.pop(context, true);
+            }
+          },
           builder: (context, state) {
             final status = <UIStatus, Widget>{
               UIStatus.error: Center(

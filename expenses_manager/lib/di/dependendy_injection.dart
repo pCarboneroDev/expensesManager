@@ -1,4 +1,6 @@
+import 'package:expenses_manager/data/database/sqlite_handler.dart';
 import 'package:expenses_manager/data/datatasources/firebase_auth_service.dart';
+import 'package:expenses_manager/data/datatasources/local_datasource.dart';
 import 'package:expenses_manager/data/datatasources/mock_datasource.dart';
 import 'package:expenses_manager/data/datatasources/remote_datasource.dart';
 import 'package:expenses_manager/data/repositories_impl/categories_repository_impl.dart';
@@ -34,14 +36,25 @@ import 'package:get_it/get_it.dart';
 final getIt = GetIt.instance;
 
 Future<void> initGetIt() async {
+  getIt.registerSingleton(SqliteHandler());
+
   //datasources
+    // Registrar LocalDatasource como singleton asíncrono
+  getIt.registerSingletonAsync<LocalDatasource>(() async {
+    final datasource = LocalDatasource(handler: getIt());
+    await datasource.init(); // Abrir la conexión
+    return datasource;
+  });
+  // Esperar a que termine la inicialización
+  await getIt.isReady<LocalDatasource>();
+
   getIt.registerSingleton(MockDatasource());
   getIt.registerSingleton(RemoteDatasource());
   getIt.registerSingleton(FirebaseAuthService());
 
   // repositories
-  getIt.registerSingleton<TransactionsRepository>(TransactionsRepositoryImpl(getIt(), getIt()));
-  getIt.registerSingleton<CategoriesRepository>(CategoriesRepositoryImpl(getIt(), getIt()));
+  getIt.registerSingleton<TransactionsRepository>(TransactionsRepositoryImpl(getIt(), getIt(), getIt()));
+  getIt.registerSingleton<CategoriesRepository>(CategoriesRepositoryImpl(getIt(), getIt(), getIt()));
   getIt.registerSingleton<FirebaseAuthRepository>(FirebaseAuthRepositoryImpl(service: getIt(), datasource: getIt()));
   getIt.registerSingleton<UsersRepository>(UsersRepositoryImpl(remoteDatasource: getIt()));
   getIt.registerSingleton<PredictionRepository>(PredictionRepositoryImpl(getIt()));

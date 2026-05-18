@@ -11,6 +11,8 @@ class CreateTransactionState extends Equatable {
 
   final List<CategoryModel> categories;
 
+  final OperationState operationState;
+
   const CreateTransactionState({
     required this.uiState,
     required this.newTransaction,
@@ -19,7 +21,10 @@ class CreateTransactionState extends Equatable {
     required this.category,
     required this.type,
     required this.categories,
+    required this.operationState
   });
+
+
 
   CreateTransactionState copyWith({
     UIState? uiState,
@@ -30,6 +35,7 @@ class CreateTransactionState extends Equatable {
     CategoryModel? category,
     TransactionType? type,
     List<CategoryModel>? categories,
+    OperationState? operationState,
   }) => CreateTransactionState(
     uiState: uiState ?? this.uiState,
     newTransaction: newTransaction ?? this.newTransaction,
@@ -38,6 +44,7 @@ class CreateTransactionState extends Equatable {
     category: category ?? this.category,
     type: type ?? this.type,
     categories: categories ?? this.categories,
+    operationState: operationState ?? this.operationState,
   );
 
   CreateTransactionState initial() => CreateTransactionState(
@@ -48,6 +55,7 @@ class CreateTransactionState extends Equatable {
     category: CategoryModel(id: 0, name: "", icon: Icons.restaurant),
     type: TransactionType.expense,
     categories: [],
+    operationState: OperationState.idle
   );
 
   @override
@@ -58,5 +66,6 @@ class CreateTransactionState extends Equatable {
     date,
     category,
     type,
+    operationState
   ];
 }

@@ -33,8 +33,9 @@ class CreateTransactionForm extends StatelessWidget {
     required this.updateDate,
     required this.updateCategory,
     required this.updateType,
-    required this.create, 
-    required this.updateAmount, required this.amountController
+    required this.create,
+    required this.updateAmount,
+    required this.amountController,
   });
 
   @override
@@ -99,18 +100,6 @@ class CreateTransactionForm extends StatelessWidget {
                 );
                 // mandar al bloc
                 create(transaction);
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      '${selectedType == TransactionType.expense ? "Expense" : "Income"} created', 
-                    ),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-                // todo revisar si esto es buena práctica
-                context.read<TransactionBloc>().add(OnLoadMonthTransactions());
-                Navigator.pop(context, true);
               },
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(

@@ -4,6 +4,7 @@ import 'package:expenses_manager/domain/models/category_model.dart';
 import 'package:expenses_manager/domain/models/movement_model.dart';
 import 'package:expenses_manager/domain/usecases/categories/get_categories_usecase.dart';
 import 'package:expenses_manager/domain/usecases/transactions/create_transaction_usecase.dart';
+import 'package:expenses_manager/utils/operation_state.dart';
 import 'package:expenses_manager/utils/transaction_type.dart';
 import 'package:expenses_manager/utils/ui_state.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +29,7 @@ class CreateTransactionBloc
           category: CategoryModel(id: 0, name: "", icon: Icons.restaurant),
           type: TransactionType.expense,
           categories: [],
+          operationState: OperationState.idle
         ),
       ) {
     on<CreateTransactionEvent>((event, emit) {});
@@ -44,6 +46,7 @@ class CreateTransactionBloc
           category: initial.category,
           type: initial.type,
           categories: initial.categories,
+          operationState: initial.operationState
         ),
       );
 
@@ -78,13 +81,13 @@ class CreateTransactionBloc
     });
 
     on<CreateTransaction>((event, emit) async {
-      emit(state.copyWith(uiState: UIState.loading()));
+      emit(state.copyWith(operationState: OperationState.loading));
 
       final result = await createTransactionUsecase.call(event.newTransaction);
 
       result.fold(
-        (fail) => emit(state.copyWith(uiState: UIState.error(fail.message))),
-        (categories) => emit(state.copyWith(uiState: UIState.success())),
+        (fail) => emit(state.copyWith(operationState: OperationState.failure)),
+        (categories) => emit(state.copyWith(operationState: OperationState.success)),
       );
     });
   }

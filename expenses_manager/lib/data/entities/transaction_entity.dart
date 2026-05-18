@@ -26,7 +26,7 @@ class TransactionEntity {
       TransactionEntity(
         id: json["id"] ?? 0,
         date: DateTime.parse(json['date']),
-        userId: json['user_id'],
+        userId: json['user_id'] ?? "",
         amount: json["amount"] ?? "",
         category: CategoryEntity.fromMap(json["category"]),
         type: TransactionType.fromString(json["transaction_type"]),
