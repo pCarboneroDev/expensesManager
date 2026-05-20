@@ -11,17 +11,15 @@ This app is being developed as a personal project and learning exercise. Not rec
 
 ### ✅ Currently Implemented
 - Basic CRUD operations for transactions
-- Connection to database
 - Initial project structure
-- First auth
-- First charts
+- Basic auth with Firebase
+- First charts and model to predict user total expenses at the end of the month
+- Both backend and local working separately
 
 ### 🏗️ In Development / Pending
-- [ ] Insights page with predictions (planning to implement ML model)
 - [ ] Complete UI/UX overhaul (currently very basic)
-- [ ] Local persistence for offline functionality
+- [ ] Offline-first architecture
 - [ ] Production deployment
-- [ ] Automated tests
 - [ ] Robust form validations
 
 ## 🛠️ Tech Stack
