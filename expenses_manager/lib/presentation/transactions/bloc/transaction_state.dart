@@ -4,7 +4,7 @@ class TransactionState extends Equatable {
   final UIState uiState;
 
   final List<CategoryModel> categories;
-  final int selectedCategory;
+  final String selectedCategory;
   final List<String> dateFilterOptions;
   final String selectedDateOption;
   final bool contentLoading;
@@ -26,7 +26,7 @@ class TransactionState extends Equatable {
     Map<DateTime, List<TransactionModel>>? transactionList,
     List<CategoryModel>? categories,
     List<String>? dateFilterOptions,
-    int? selectedCategory,
+    String? selectedCategory,
     String? selectedDateOption,
     bool? contentLoading
   }) => TransactionState(

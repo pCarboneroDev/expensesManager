@@ -1,4 +1,4 @@
-import 'package:expenses_manager/domain/models/movement_model.dart';
+import 'package:expenses_manager/domain/models/transaction_model.dart';
 import 'package:expenses_manager/utils/category_color.dart';
 import 'package:expenses_manager/utils/format_date.dart';
 import 'package:expenses_manager/utils/transaction_type.dart';

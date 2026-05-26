@@ -3,7 +3,7 @@ import 'package:expenses_manager/utils/transaction_type.dart';
 import 'package:flutter/material.dart';
 
 class TransactionModel{
-  final int id;
+  final String id;
   final DateTime date;
   final double amount;
   final CategoryModel category;
@@ -13,10 +13,10 @@ class TransactionModel{
 
   factory TransactionModel.empty() {
     return TransactionModel(
-      id: 0,
+      id: "",
       date: DateTime.now(),
       amount: 0,
-      category: CategoryModel(id: 0, name: "", icon: Icons.restaurant),
+      category: CategoryModel(id: "", name: "", icon: Icons.restaurant),
       type: TransactionType.expense
     );
   }

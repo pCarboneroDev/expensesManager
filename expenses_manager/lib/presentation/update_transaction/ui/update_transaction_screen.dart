@@ -1,5 +1,5 @@
 import 'package:expenses_manager/domain/models/category_model.dart';
-import 'package:expenses_manager/domain/models/movement_model.dart';
+import 'package:expenses_manager/domain/models/transaction_model.dart';
 import 'package:expenses_manager/presentation/widgets/transaction_form/CreateTransactionForm.dart';
 import 'package:expenses_manager/presentation/update_transaction/bloc/update_transaction_bloc.dart';
 import 'package:expenses_manager/utils/operation_state.dart';

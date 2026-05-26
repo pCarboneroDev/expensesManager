@@ -5,8 +5,8 @@ class FilterContainer extends StatelessWidget {
   final List<CategoryModel> categories;
   final List<String> dateOptions;
   final String selectedDate;
-  final int selectedCategory;
-  final void Function(int) filter;
+  final String selectedCategory;
+  final void Function(String) filter;
   final void Function(String) filterDate;
 
   const FilterContainer({

@@ -4,7 +4,7 @@ import 'package:expenses_manager/domain/models/category_model.dart';
 import 'package:expenses_manager/utils/get_icon.dart';
 
 class CategoryEntity {
-  final int id;
+  final String id;
   final String name;
 
   CategoryEntity({required this.id, required this.name});
@@ -14,7 +14,7 @@ class CategoryEntity {
   String toJson() => json.encode(toMap());
 
   factory CategoryEntity.fromMap(Map<String, dynamic> json) => CategoryEntity(
-    id: json["id"] ?? 0,
+    id: json["id"] ?? "",
     name: json["name"] ?? ""
   );
 

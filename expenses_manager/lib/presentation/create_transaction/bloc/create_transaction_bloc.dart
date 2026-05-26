@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:expenses_manager/domain/models/category_model.dart';
-import 'package:expenses_manager/domain/models/movement_model.dart';
+import 'package:expenses_manager/domain/models/transaction_model.dart';
 import 'package:expenses_manager/domain/usecases/categories/get_categories_usecase.dart';
 import 'package:expenses_manager/domain/usecases/transactions/create_transaction_usecase.dart';
 import 'package:expenses_manager/utils/operation_state.dart';
@@ -26,7 +26,7 @@ class CreateTransactionBloc
           newTransaction: TransactionModel.empty(),
           amount: 0,
           date: DateTime.now(),
-          category: CategoryModel(id: 0, name: "", icon: Icons.restaurant),
+          category: CategoryModel(id: "", name: "", icon: Icons.restaurant),
           type: TransactionType.expense,
           categories: [],
           operationState: OperationState.idle

@@ -1,4 +1,4 @@
-import 'package:expenses_manager/domain/models/movement_model.dart';
+import 'package:expenses_manager/domain/models/transaction_model.dart';
 
 Map<DateTime, List<TransactionModel>> groupTransactionsByDay(
   List<TransactionModel> transactions,

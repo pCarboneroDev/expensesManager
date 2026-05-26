@@ -1,7 +1,7 @@
-import 'package:expenses_manager/domain/models/movement_model.dart';
+import 'package:expenses_manager/domain/models/transaction_model.dart';
 
 class UpdateParams {
-  final int transactionId;
+  final String transactionId;
   final TransactionModel transaction;
 
   UpdateParams({required this.transactionId, required this.transaction});

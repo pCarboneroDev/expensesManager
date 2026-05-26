@@ -1,7 +1,8 @@
-import 'package:expenses_manager/domain/models/movement_model.dart';
+import 'package:expenses_manager/domain/models/transaction_model.dart';
 import 'package:expenses_manager/presentation/home/bloc/home_bloc.dart';
 import 'package:expenses_manager/presentation/home/ui/widgets/balance_card.dart';
 import 'package:expenses_manager/presentation/home/ui/widgets/home_transaction_card.dart';
+import 'package:expenses_manager/presentation/home/ui/widgets/sign_out_tile.dart';
 import 'package:expenses_manager/utils/ui_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -49,45 +50,20 @@ class _HomeScreenState extends State<HomeScreen> {
               leading: Icon(FontAwesomeIcons.person),
               onTap: () {},
             ),
-            ListTile(
-              tileColor: ColorScheme.of(context).error,
-              title: const Text('SignOut'),
-              leading: Icon(FontAwesomeIcons.arrowRightFromBracket),
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: const Text('Sign out'),
-                      content: const Text('Are you sure you want to sign out?'),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text('Cancel'),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            signOut();
-                            Navigator.pushReplacementNamed(context, 'login');
-                          },
-                          style: TextButton.styleFrom(
-                            foregroundColor: ColorScheme.of(
-                              context,
-                            ).errorContainer,
-                          ),
-                          child: Text(
-                            'Sign out',
-                            style: TextStyle(
-                              color: ColorScheme.of(context).onErrorContainer,
-                            ),
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                );
+
+            BlocBuilder<HomeBloc, HomeState>(
+              builder: (context, state) {
+                if(!state.user){
+                  return ListTile(
+                    tileColor: Colors.green,
+                    title: const Text('Log in'),
+                    leading: Icon(FontAwesomeIcons.arrowRightToBracket),
+                    onTap: () { Navigator.pushNamed(context, 'login'); },
+                  );
+                }
+                return SignOutTile(signOut: signOut);
               },
-            ),
+            )
           ],
         ),
       ),

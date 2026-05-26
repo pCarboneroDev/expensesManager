@@ -1,13 +1,11 @@
 import 'package:expenses_manager/domain/models/category_model.dart';
-import 'package:expenses_manager/domain/models/movement_model.dart';
+import 'package:expenses_manager/domain/models/transaction_model.dart';
 import 'package:expenses_manager/presentation/widgets/transaction_form/category_selector.dart';
 import 'package:expenses_manager/presentation/widgets/transaction_form/date_card.dart';
 import 'package:expenses_manager/presentation/widgets/transaction_form/amount_field.dart';
 import 'package:expenses_manager/presentation/widgets/transaction_form/type_selector.dart';
-import 'package:expenses_manager/presentation/transactions/bloc/transaction_bloc.dart';
 import 'package:expenses_manager/utils/transaction_type.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CreateTransactionForm extends StatelessWidget {
   final List<CategoryModel> categories;
@@ -92,7 +90,7 @@ class CreateTransactionForm extends StatelessWidget {
                 }
 
                 final transaction = TransactionModel(
-                  id: DateTime.now().millisecondsSinceEpoch,
+                  id: "",
                   date: selectedDate,
                   amount: amount,
                   category: selectedCategory!,

@@ -8,7 +8,7 @@ class UpdateTransactionState extends Equatable {
   final DateTime date;
   final CategoryModel category;
   final TransactionType type;
-  final int transactionId;
+  final String transactionId;
 
   final List<CategoryModel> categories;
 
@@ -35,7 +35,7 @@ class UpdateTransactionState extends Equatable {
     CategoryModel? category,
     TransactionType? type,
     List<CategoryModel>? categories,
-    int? transactionId,
+    String? transactionId,
     OperationState? operationState
     }
   ) => UpdateTransactionState(

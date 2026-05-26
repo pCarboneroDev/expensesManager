@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:expenses_manager/data/entities/category_entity.dart';
-import 'package:expenses_manager/domain/models/movement_model.dart';
+import 'package:expenses_manager/domain/models/transaction_model.dart';
 import 'package:expenses_manager/utils/transaction_type.dart';
 
 class TransactionEntity {
-  final int id;
+  final String id;
   final DateTime date;
   final String userId;
   final double amount;

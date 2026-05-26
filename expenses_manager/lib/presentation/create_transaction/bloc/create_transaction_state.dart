@@ -52,7 +52,7 @@ class CreateTransactionState extends Equatable {
     newTransaction: TransactionModel.empty(),
     amount: 0,
     date: DateTime.now(),
-    category: CategoryModel(id: 0, name: "", icon: Icons.restaurant),
+    category: CategoryModel(id: "", name: "", icon: Icons.restaurant),
     type: TransactionType.expense,
     categories: [],
     operationState: OperationState.idle

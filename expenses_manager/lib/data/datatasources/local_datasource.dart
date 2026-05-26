@@ -1,16 +1,21 @@
 import 'package:dartz/dartz.dart';
 import 'package:expenses_manager/data/database/sqlite_handler.dart';
 import 'package:expenses_manager/data/entities/category_entity.dart';
+import 'package:expenses_manager/data/entities/task_entity.dart';
 import 'package:expenses_manager/data/entities/transaction_entity.dart';
 import 'package:expenses_manager/domain/exceptions/failure.dart';
 import 'package:expenses_manager/domain/models/category_model.dart';
-import 'package:expenses_manager/domain/models/movement_model.dart';
+import 'package:expenses_manager/domain/models/transaction_model.dart';
+import 'package:expenses_manager/utils/operation_type.dart';
+import 'package:expenses_manager/utils/sync_status.dart';
 import 'package:expenses_manager/utils/transaction_type.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:uuid/uuid.dart';
 
 class LocalDatasource {
   final SqliteHandler handler;
   Database? _db;
+  final uuid = Uuid();
 
   LocalDatasource({required this.handler});
   
@@ -66,13 +71,12 @@ class LocalDatasource {
   Future<Either<Failure, List<TransactionModel>>> getFilteredTransactions({
     int? skip,
     int? limit,
-    int? categoryId,
+    String? categoryId,
     String date = 'month',
   }) async {
     try {
       List<Map<String, Object?>>? response;
       final dateLower = date.toLowerCase();
-      String dateFilter = DateTime.now().month.toString();
 
       String query = '''SELECT t.*, c.name as category_name FROM transactions t LEFT JOIN categories c ON t.id_category = c.id''';
 
@@ -106,11 +110,9 @@ class LocalDatasource {
       //   response = await _db?.rawQuery(query); 
       // }
       if (categoryId != null && categoryId != 0) {
-        query += " AND id_category = ?";
+        query += " AND id_category = ? ORDER BY t.date";
         args.add(categoryId.toString());
       }
-
-      print(query);
 
       response = await _db?.rawQuery(query, args); 
 
@@ -120,11 +122,11 @@ class LocalDatasource {
 
       final List<TransactionModel> transactions = response.map((row) {
         return TransactionEntity(
-          id: row['id'] as int, 
+          id: row['id'] as String, 
           date: DateTime.parse(row['date'] as String), 
           userId: "",
           amount: row['amount'] as double, 
-          category: CategoryEntity(id: row['id_category'] as int, name: row['category_name'] as String), 
+          category: CategoryEntity(id: row['id_category'] as String, name: row['category_name'] as String), 
           type: TransactionType.fromString(row['transaction_type'] as String)
         ).toModel();
       }).toList();
@@ -137,11 +139,39 @@ class LocalDatasource {
     }
   }
 
+
+  Future<Either<Failure, TransactionModel>> getTransactionId(String id) async {
+    try{
+      String query = '''SELECT t.*, c.name as category_name FROM transactions t LEFT JOIN categories c ON t.id_category = c.id WHERE t.id = ?''';
+
+      final response = await _db!.rawQuery(query, [id]);
+
+      final TransactionModel transaction = response.map((row) {
+        return TransactionEntity(
+          id: row['id'] as String, 
+          date: DateTime.parse(row['date'] as String), 
+          userId: "",
+          amount: row['amount'] as double, 
+          category: CategoryEntity(id: row['id_category'] as String, name: row['category_name'] as String), 
+          type: TransactionType.fromString(row['transaction_type'] as String)
+        ).toModel();
+      }).toList()[0];
+
+      return Right(transaction);
+    } 
+    catch(error){
+      return Left(DataSourceException(error.toString()));
+    }
+  }
+
   Future<Either<Failure, TransactionModel>> createTransaction(
     TransactionModel newTransaction,
   ) async {
     try {
+      final generatedUuid = uuid.v7();
+
       final response = await _db?.insert('transactions', {
+        'id': generatedUuid,
         'date': newTransaction.date.toString(),
         'amount': newTransaction.amount,
         'id_category': newTransaction.category.id,
@@ -153,7 +183,15 @@ class LocalDatasource {
       }
 
       if (response > 0) {
-        return Right(newTransaction);
+        return Right(
+          TransactionModel(
+            id: generatedUuid, 
+            date: newTransaction.date, 
+            amount: newTransaction.amount,
+            category: newTransaction.category,
+            type: newTransaction.type,
+          )
+        );
       } else {
         return Left(DataSourceException("Error: response is 0"));
       }
@@ -162,7 +200,7 @@ class LocalDatasource {
     }
   }
 
-  Future<Either<Failure, bool>> deleteTransaction(int transactionId) async {
+  Future<Either<Failure, bool>> deleteTransaction(String transactionId) async {
     try {
       final response = await _db?.delete("transactions", where: 'id = ?', whereArgs: [transactionId]);
 
@@ -175,8 +213,8 @@ class LocalDatasource {
     }
   }
 
-    Future<Either<Failure, TransactionModel>> updateTransaction(
-    int transactionId,
+  Future<Either<Failure, TransactionModel>> updateTransaction(
+    String transactionId,
     TransactionModel transaction,
   ) async {
     try {
@@ -184,10 +222,10 @@ class LocalDatasource {
       final response = await _db?.update(
         'transactions',
         {
-          'date': transaction.date,
+          'date': transaction.date.toString(),
           'amount': transaction.amount,
-          'categoryId': transaction.category.id,
-          'type': transaction.type.name,
+          'id_category': transaction.category.id,
+          'transaction_type': transaction.type.name,
         },
         where: 'id = ?',
         whereArgs: [transactionId]
@@ -199,6 +237,65 @@ class LocalDatasource {
       return Right(transaction);
     } catch (error) {
       return Left(DataSourceException(error.toString()));
+    }
+  }
+
+  Future<Either<Failure, bool>> createTask(
+    TaskEntity newTask
+  ) async {
+    try {
+      final response = await _db?.insert(
+        'tasks',
+        {
+          'entityType': newTask.entityType,
+          'entityId': newTask.entityId,
+          'operation': newTask.operation.name,
+          'payload': newTask.payload,
+          'createdAt': newTask.createdAt.toString(),
+          'attempts': newTask.attempts,
+          'status': newTask.status.name
+        }
+      );
+
+      if (response == null){
+        return Left(DataSourceException("ERROR: response is null or 0"));
+      }
+      return Right(true);
+    } catch (error) {
+      return Left(DataSourceException(error.toString()));
+    }
+  }
+
+  Future<Either<Failure, List<TaskEntity>>> getPendingTasks() async {
+    try {
+      final response = await _db?.query('tasks', where: 'status = ?', whereArgs: [SyncStatus.pending.name]);
+
+      if (response == null){
+        return Left(DataSourceException("ERROR: response is null or 0"));
+      }
+
+      List<TaskEntity> tasks = response.map((row) {
+        return TaskEntity(
+          entityType: row['entityType'] as String,
+          entityId: row['entityId'] as String,
+          operation: OperationType.values.firstWhere((e) => e.name == row['operation'] as String),
+          createdAt: DateTime.parse(row['createdAt'] as String),
+          attempts: row['attempts'] as int,
+          status: SyncStatus.values.firstWhere((e) => e.name == row['status'] as String),
+        );
+      }).toList();
+
+      return Right(tasks);
+    } catch (error) {
+      return Left(DataSourceException(error.toString()));
+    }
+  }
+
+  void setTaskStatus(SyncStatus newStatus, String id) async {
+    try {
+      _db?.update("tasks", {"status": newStatus.name}, where: "entityId = ?", whereArgs: [id]);
+    } catch (error) {
+      rethrow;
     }
   }
 

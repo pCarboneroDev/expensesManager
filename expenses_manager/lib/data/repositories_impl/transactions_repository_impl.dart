@@ -1,18 +1,22 @@
 import 'package:dartz/dartz.dart';
 import 'package:expenses_manager/data/datatasources/local_datasource.dart';
-import 'package:expenses_manager/data/datatasources/mock_datasource.dart';
 import 'package:expenses_manager/data/datatasources/remote_datasource.dart';
+import 'package:expenses_manager/data/entities/task_entity.dart';
+import 'package:expenses_manager/data/sync/sync_notifier.dart';
 import 'package:expenses_manager/domain/exceptions/failure.dart';
-import 'package:expenses_manager/domain/models/movement_model.dart';
+import 'package:expenses_manager/domain/models/transaction_model.dart';
 import 'package:expenses_manager/domain/models/params/filter_transactions_params.dart';
 import 'package:expenses_manager/domain/repositories/transactions_repository.dart';
+import 'package:expenses_manager/utils/operation_type.dart';
+import 'package:expenses_manager/utils/sync_status.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class TransactionsRepositoryImpl implements TransactionsRepository{
-  final MockDatasource dataSource;
   final RemoteDatasource remoteDatasource;
   final LocalDatasource localDatasource;
+  final SyncNotifier syncNotifier;
 
-  const TransactionsRepositoryImpl(this.dataSource, this.remoteDatasource, this.localDatasource);
+  TransactionsRepositoryImpl(this.remoteDatasource, this.localDatasource, this.syncNotifier);
 
   @override
   Future<Either<Failure, List<TransactionModel>>> getLastTransactions() async {
@@ -27,18 +31,74 @@ class TransactionsRepositoryImpl implements TransactionsRepository{
   @override
   Future<Either<Failure, TransactionModel>> createTransaction(TransactionModel transaction) async {
     // return await remoteDatasource.createTransaction(transaction);
-    return await localDatasource.createTransaction(transaction);
+    final User? user = FirebaseAuth.instance.currentUser;
+
+    final result = await localDatasource.createTransaction(transaction);
+
+    if(user != null && result.isRight()) {
+      await localDatasource.createTask(
+        TaskEntity( 
+          entityType: "transaction",
+          entityId: result.fold(
+            (l) => "",
+            (r) => r.id,
+          ), 
+          operation: OperationType.create,
+          createdAt: DateTime.now(), 
+          attempts: 0, 
+          status: SyncStatus.pending
+        )
+      );
+      syncNotifier.notifyTableChanged('tasks');
+    }
+    return result;
   }
   
   @override
-  Future<Either<Failure, bool>> deleteTransaction(int transactionId) async {
-    return await localDatasource.deleteTransaction(transactionId);
+  Future<Either<Failure, bool>> deleteTransaction(String transactionId) async {
+    final User? user = FirebaseAuth.instance.currentUser;
+
+    final result = await localDatasource.deleteTransaction(transactionId);
+
+    if(user != null && result.isRight()) {
+      await localDatasource.createTask(
+        TaskEntity( 
+          entityType: "transaction",
+          entityId: transactionId,
+          operation: OperationType.delete,
+          createdAt: DateTime.now(), 
+          attempts: 0, 
+          status: SyncStatus.pending
+        )
+      );
+      syncNotifier.notifyTableChanged('tasks');
+    }
+
+    return result;
     // return await remoteDatasource.deleteTransaction(transactionId);
   }
   
   @override
-  Future<Either<Failure, TransactionModel>> updateTransaction(int transactionId, TransactionModel transaction) {
-    return localDatasource.updateTransaction(transactionId, transaction);
+  Future<Either<Failure, TransactionModel>> updateTransaction(String transactionId, TransactionModel transaction) async {
+    final User? user = FirebaseAuth.instance.currentUser;
+
+    final result = await localDatasource.updateTransaction(transactionId, transaction);
+
+    if(user != null && result.isRight()) {
+      await localDatasource.createTask(
+        TaskEntity( 
+          entityType: "transaction",
+          entityId: transactionId,
+          operation: OperationType.update,
+          createdAt: DateTime.now(), 
+          attempts: 0, 
+          status: SyncStatus.pending
+        )
+      );
+      syncNotifier.notifyTableChanged('tasks');
+    }
+
+    return result;
     // return remoteDatasource.updateTransaction(transactionId, transaction);
   }
 

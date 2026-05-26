@@ -16,7 +16,7 @@ class FirebaseAuthService {
       return Left(DataSourceException('unknown error'));
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
-        print('Ya existe una cuenta con ese correo electrónico');
+        //todo gestionar que ya exista ese correo
       }
       return Left(DataSourceException(e.toString()));
     } catch (e) {
@@ -48,7 +48,7 @@ class FirebaseAuthService {
       await _auth.signOut();
       return Right(true);
     } catch (e) {
-      print('Error al cerrar sesión: $e');
+      //todo gestionar error
       return Left(DataSourceException(e.toString()));
     }
   }

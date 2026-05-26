@@ -1,13 +1,14 @@
 import 'package:expenses_manager/data/database/sqlite_handler.dart';
 import 'package:expenses_manager/data/datatasources/firebase_auth_service.dart';
 import 'package:expenses_manager/data/datatasources/local_datasource.dart';
-import 'package:expenses_manager/data/datatasources/mock_datasource.dart';
 import 'package:expenses_manager/data/datatasources/remote_datasource.dart';
 import 'package:expenses_manager/data/repositories_impl/categories_repository_impl.dart';
 import 'package:expenses_manager/data/repositories_impl/firebase_auth_repository_impl.dart';
 import 'package:expenses_manager/data/repositories_impl/prediction_repository_impl.dart';
 import 'package:expenses_manager/data/repositories_impl/transactions_repository_impl.dart';
 import 'package:expenses_manager/data/repositories_impl/users_repository_impl.dart';
+import 'package:expenses_manager/data/sync/sync_manager.dart';
+import 'package:expenses_manager/data/sync/sync_notifier.dart';
 import 'package:expenses_manager/domain/repositories/categories_repository.dart';
 import 'package:expenses_manager/domain/repositories/firebase_auth_repository.dart';
 import 'package:expenses_manager/domain/repositories/prediction_repository.dart';
@@ -48,13 +49,20 @@ Future<void> initGetIt() async {
   // Esperar a que termine la inicialización
   await getIt.isReady<LocalDatasource>();
 
-  getIt.registerSingleton(MockDatasource());
   getIt.registerSingleton(RemoteDatasource());
   getIt.registerSingleton(FirebaseAuthService());
 
+
+  getIt.registerSingleton(SyncNotifier());
+  getIt.registerSingletonAsync<SyncManager>(() async {
+    final manager = SyncManager(notifier: getIt(), source: getIt(), remote: getIt());
+    manager.start();
+    return manager;
+  });
+
   // repositories
   getIt.registerSingleton<TransactionsRepository>(TransactionsRepositoryImpl(getIt(), getIt(), getIt()));
-  getIt.registerSingleton<CategoriesRepository>(CategoriesRepositoryImpl(getIt(), getIt(), getIt()));
+  getIt.registerSingleton<CategoriesRepository>(CategoriesRepositoryImpl(getIt(), getIt()));
   getIt.registerSingleton<FirebaseAuthRepository>(FirebaseAuthRepositoryImpl(service: getIt(), datasource: getIt()));
   getIt.registerSingleton<UsersRepository>(UsersRepositoryImpl(remoteDatasource: getIt()));
   getIt.registerSingleton<PredictionRepository>(PredictionRepositoryImpl(getIt()));
