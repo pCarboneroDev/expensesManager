@@ -23,13 +23,13 @@ class _TransactionsScreenState extends State<TransactionsScreen> with RouteAware
     BlocProvider.of<TransactionBloc>(context).add(OnLoadMonthTransactions());
   }
   
-  void deleteTransaction(int transactionId) {
+  void deleteTransaction(String transactionId) {
     BlocProvider.of<TransactionBloc>(
       context,
     ).add(DeleteTransaction(transactionId: transactionId));
   }
 
-  void filterCategory(int id) {
+  void filterCategory(String id) {
     BlocProvider.of<TransactionBloc>(context).add(FilterCategory(id: id));
   }
 

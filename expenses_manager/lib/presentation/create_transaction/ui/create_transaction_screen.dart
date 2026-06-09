@@ -1,7 +1,8 @@
 import 'package:expenses_manager/domain/models/category_model.dart';
-import 'package:expenses_manager/domain/models/movement_model.dart';
+import 'package:expenses_manager/domain/models/transaction_model.dart';
 import 'package:expenses_manager/presentation/create_transaction/bloc/create_transaction_bloc.dart';
-import 'package:expenses_manager/presentation/widgets/transaction_form/CreateTransactionForm.dart';
+import 'package:expenses_manager/presentation/widgets/transaction_form/create_transaction_form.dart';
+import 'package:expenses_manager/utils/operation_state.dart';
 import 'package:expenses_manager/utils/transaction_type.dart';
 import 'package:expenses_manager/utils/ui_state.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +30,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     final state = context.watch<CreateTransactionBloc>().state;
-    _updateControllerFromState(state);
+    _updateControllerFormState(state);
   }
 
   @override
@@ -38,7 +39,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
     super.dispose();
   }
 
-  void _updateControllerFromState(CreateTransactionState state) {
+  void _updateControllerFormState(CreateTransactionState state) {
     final currentText = amountController.text;
     final expectedText = state.amount > 0 ? state.amount.toString() : '';
 
@@ -85,7 +86,25 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
         centerTitle: true,
         elevation: 0,
       ),
-      body: BlocBuilder<CreateTransactionBloc, CreateTransactionState>(
+      body: BlocConsumer<CreateTransactionBloc, CreateTransactionState>(
+        listener: (context, state) {
+          if (state.operationState == OperationState.success ||
+              state.operationState == OperationState.failure) {
+            String message = (state.operationState == OperationState.success)
+                ? '${state.type == TransactionType.expense ? "Expense" : "Income"} created'
+                : '${state.type == TransactionType.expense ? "Expense" : "Income"} not created';
+
+            Color color = (state.operationState == OperationState.success)
+                ? Colors.green
+                : Colors.red;
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(message), backgroundColor: color),
+            );
+
+            Navigator.pop(context, true);
+          }
+        },
         builder: (context, state) {
           final status = <UIStatus, Widget>{
             UIStatus.error: Center(
@@ -129,7 +148,6 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
             ),
             UIStatus.idle: const Center(child: Text('IDLE')),
           };
-          print(state.amount);
           return status[state.uiState.status] ?? Container();
         },
       ),

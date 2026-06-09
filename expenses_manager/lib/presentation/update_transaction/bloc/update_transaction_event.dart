@@ -30,6 +30,6 @@ class UpdateTransaction extends UpdateTransactionEvent {
 }
 
 class UpdateTransactionId extends UpdateTransactionEvent {
-  final int id;
+  final String id;
   UpdateTransactionId(this.id);
 }

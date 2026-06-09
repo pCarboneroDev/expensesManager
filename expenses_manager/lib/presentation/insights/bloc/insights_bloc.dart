@@ -3,7 +3,7 @@ import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:expenses_manager/domain/exceptions/failure.dart';
 import 'package:expenses_manager/domain/models/category_model.dart';
-import 'package:expenses_manager/domain/models/movement_model.dart';
+import 'package:expenses_manager/domain/models/transaction_model.dart';
 import 'package:expenses_manager/domain/models/params/filter_transactions_params.dart';
 import 'package:expenses_manager/domain/usecases/categories/get_categories_usecase.dart';
 import 'package:expenses_manager/domain/usecases/prediction/predict_usecase.dart';

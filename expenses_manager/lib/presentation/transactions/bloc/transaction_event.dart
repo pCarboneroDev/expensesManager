@@ -5,13 +5,13 @@ abstract class TransactionEvent {}
 class OnLoadMonthTransactions extends TransactionEvent {}
 
 class DeleteTransaction extends TransactionEvent {
-  final int transactionId;
+  final String transactionId;
 
   DeleteTransaction({required this.transactionId}); 
 }
 
 class FilterCategory extends TransactionEvent {
-  final int id;
+  final String id;
   FilterCategory({required this.id});
 }
 

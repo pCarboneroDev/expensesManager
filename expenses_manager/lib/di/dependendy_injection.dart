@@ -1,11 +1,14 @@
+import 'package:expenses_manager/data/database/sqlite_handler.dart';
 import 'package:expenses_manager/data/datatasources/firebase_auth_service.dart';
-import 'package:expenses_manager/data/datatasources/mock_datasource.dart';
+import 'package:expenses_manager/data/datatasources/local_datasource.dart';
 import 'package:expenses_manager/data/datatasources/remote_datasource.dart';
 import 'package:expenses_manager/data/repositories_impl/categories_repository_impl.dart';
 import 'package:expenses_manager/data/repositories_impl/firebase_auth_repository_impl.dart';
 import 'package:expenses_manager/data/repositories_impl/prediction_repository_impl.dart';
 import 'package:expenses_manager/data/repositories_impl/transactions_repository_impl.dart';
 import 'package:expenses_manager/data/repositories_impl/users_repository_impl.dart';
+import 'package:expenses_manager/data/sync/sync_manager.dart';
+import 'package:expenses_manager/data/sync/sync_notifier.dart';
 import 'package:expenses_manager/domain/repositories/categories_repository.dart';
 import 'package:expenses_manager/domain/repositories/firebase_auth_repository.dart';
 import 'package:expenses_manager/domain/repositories/prediction_repository.dart';
@@ -27,6 +30,7 @@ import 'package:expenses_manager/presentation/create_transaction/bloc/create_tra
 import 'package:expenses_manager/presentation/home/bloc/home_bloc.dart';
 import 'package:expenses_manager/presentation/insights/bloc/insights_bloc.dart';
 import 'package:expenses_manager/presentation/login/bloc/login_bloc.dart';
+import 'package:expenses_manager/presentation/splash/bloc/splash_bloc.dart';
 import 'package:expenses_manager/presentation/transactions/bloc/transaction_bloc.dart';
 import 'package:expenses_manager/presentation/update_transaction/bloc/update_transaction_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -34,16 +38,35 @@ import 'package:get_it/get_it.dart';
 final getIt = GetIt.instance;
 
 Future<void> initGetIt() async {
+  getIt.registerSingleton(SqliteHandler());
+
   //datasources
-  getIt.registerSingleton(MockDatasource());
+    // Registrar LocalDatasource como singleton asíncrono
+  getIt.registerSingletonAsync<LocalDatasource>(() async {
+    final datasource = LocalDatasource(handler: getIt());
+    await datasource.init(); // Abrir la conexión
+    return datasource;
+  });
+  // Esperar a que termine la inicialización
+  await getIt.isReady<LocalDatasource>();
+
   getIt.registerSingleton(RemoteDatasource());
   getIt.registerSingleton(FirebaseAuthService());
 
+
+  getIt.registerSingleton(SyncNotifier());
+  getIt.registerSingletonAsync<SyncManager>(() async {
+    final manager = SyncManager(notifier: getIt(), source: getIt(), remote: getIt());
+    manager.start();
+    return manager;
+  });
+  await getIt.isReady<SyncManager>();
+
   // repositories
-  getIt.registerSingleton<TransactionsRepository>(TransactionsRepositoryImpl(getIt(), getIt()));
+  getIt.registerSingleton<TransactionsRepository>(TransactionsRepositoryImpl(getIt(), getIt(), getIt()));
   getIt.registerSingleton<CategoriesRepository>(CategoriesRepositoryImpl(getIt(), getIt()));
-  getIt.registerSingleton<FirebaseAuthRepository>(FirebaseAuthRepositoryImpl(service: getIt(), datasource: getIt()));
-  getIt.registerSingleton<UsersRepository>(UsersRepositoryImpl(remoteDatasource: getIt()));
+  getIt.registerSingleton<FirebaseAuthRepository>(FirebaseAuthRepositoryImpl(service: getIt(), datasource: getIt(), localDatasource: getIt(), notifier: getIt(), manager: getIt()));
+  getIt.registerSingleton<UsersRepository>(UsersRepositoryImpl(remoteDatasource: getIt(), notifier: getIt()));
   getIt.registerSingleton<PredictionRepository>(PredictionRepositoryImpl(getIt()));
 
   // usecases
@@ -72,6 +95,7 @@ Future<void> initGetIt() async {
 
 
   // blocs
+  getIt.registerSingleton(SplashBloc(getIt(), getIt(), getIt()));
   getIt.registerSingleton(HomeBloc(getIt(), getIt(), getIt()));
   getIt.registerSingleton(TransactionBloc(getIt(), getIt(), getIt(), getIt()));
   getIt.registerSingleton(CreateTransactionBloc(getIt(), getIt()));

@@ -8,9 +8,11 @@ class UpdateTransactionState extends Equatable {
   final DateTime date;
   final CategoryModel category;
   final TransactionType type;
-  final int transactionId;
+  final String transactionId;
 
   final List<CategoryModel> categories;
+
+  final OperationState operationState;
 
   const UpdateTransactionState({
     required this.uiState,
@@ -20,7 +22,8 @@ class UpdateTransactionState extends Equatable {
     required this.category,
     required this.type,
     required this.categories,
-    required this.transactionId
+    required this.transactionId,
+    required this.operationState
   });
 
   UpdateTransactionState copyWith(
@@ -32,7 +35,8 @@ class UpdateTransactionState extends Equatable {
     CategoryModel? category,
     TransactionType? type,
     List<CategoryModel>? categories,
-    int? transactionId
+    String? transactionId,
+    OperationState? operationState
     }
   ) => UpdateTransactionState(
     uiState: uiState ?? this.uiState,
@@ -42,9 +46,10 @@ class UpdateTransactionState extends Equatable {
     category: category ?? this.category,
     type: type ?? this.type,
     categories: categories ?? this.categories,
-    transactionId: transactionId ?? this.transactionId
+    transactionId: transactionId ?? this.transactionId,
+    operationState: operationState ?? this.operationState
   );
 
   @override
-  List<Object> get props => [uiState, newTransaction, amount, date, category, type, transactionId];
+  List<Object> get props => [uiState, newTransaction, amount, date, category, type, transactionId, operationState];
 }

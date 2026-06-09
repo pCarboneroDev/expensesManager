@@ -3,7 +3,7 @@ import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:expenses_manager/domain/exceptions/failure.dart';
 import 'package:expenses_manager/domain/models/category_model.dart';
-import 'package:expenses_manager/domain/models/movement_model.dart';
+import 'package:expenses_manager/domain/models/transaction_model.dart';
 import 'package:expenses_manager/domain/models/params/filter_transactions_params.dart';
 import 'package:expenses_manager/domain/usecases/categories/get_categories_usecase.dart';
 import 'package:expenses_manager/domain/usecases/transactions/delete_transaction_usecase.dart';
@@ -32,7 +32,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       transactionList: {},
       categories: [],
       dateFilterOptions: ['Month', 'Year', 'Week', 'Day'],
-      selectedCategory: 0,
+      selectedCategory: "",
       selectedDateOption: '',
       contentLoading: false
     )) {
@@ -58,7 +58,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
       categories.fold(
         (fail) => emit(state.copyWith(uiState: UIState.error(fail.message))),
-        (categories) => emit(state.copyWith(categories: [CategoryModel(id: 0, name: 'All', icon: Icons.abc), ...categories], selectedCategory: 0, selectedDateOption: state.dateFilterOptions.first))
+        (categories) => emit(state.copyWith(categories: [CategoryModel(id: "", name: 'All', icon: Icons.abc), ...categories], selectedCategory: "", selectedDateOption: state.dateFilterOptions.first))
       );
 
       transactions.fold(

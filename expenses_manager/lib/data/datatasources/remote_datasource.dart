@@ -7,7 +7,7 @@ import 'package:expenses_manager/data/entities/transaction_entity.dart';
 import 'package:expenses_manager/data/entities/user_entity.dart';
 import 'package:expenses_manager/domain/exceptions/failure.dart';
 import 'package:expenses_manager/domain/models/category_model.dart';
-import 'package:expenses_manager/domain/models/movement_model.dart';
+import 'package:expenses_manager/domain/models/transaction_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class RemoteDatasource {
@@ -135,6 +135,7 @@ class RemoteDatasource {
         return Left(DataSourceException('No user found'));
       }
       final t = CreateTransactionDto(
+        id: newTransaction.id,
         date: newTransaction.date,
         userId: user.uid,
         amount: newTransaction.amount,
@@ -156,7 +157,7 @@ class RemoteDatasource {
     }
   }
 
-  Future<Either<Failure, bool>> deleteTransaction(int transactionId) async {
+  Future<Either<Failure, bool>> deleteTransaction(String transactionId) async {
     try {
       final response = await dio.delete('transactions/$transactionId');
 
@@ -171,7 +172,7 @@ class RemoteDatasource {
   }
 
   Future<Either<Failure, TransactionModel>> updateTransaction(
-    int transactionId,
+    String transactionId,
     TransactionModel transaction,
   ) async {
     try {
@@ -182,6 +183,7 @@ class RemoteDatasource {
       final response = await dio.put(
         'transactions/$transactionId',
         data: CreateTransactionDto(
+          id: transactionId,
           date: transaction.date,
           userId: user.uid,
           amount: transaction.amount,

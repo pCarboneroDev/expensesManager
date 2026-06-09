@@ -1,4 +1,4 @@
-import 'package:expenses_manager/domain/models/movement_model.dart';
+import 'package:expenses_manager/domain/models/transaction_model.dart';
 import 'package:expenses_manager/utils/format_date.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -6,7 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 class MovementHome extends StatelessWidget {
   final TransactionModel movement;
 
-  const MovementHome({required this.movement});
+  const MovementHome({super.key, required this.movement});
 
   @override
   Widget build(BuildContext context) {

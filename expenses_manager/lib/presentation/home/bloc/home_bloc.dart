@@ -1,12 +1,13 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:expenses_manager/domain/models/movement_model.dart';
+import 'package:expenses_manager/domain/models/transaction_model.dart';
 import 'package:expenses_manager/domain/models/params/filter_transactions_params.dart';
 import 'package:expenses_manager/domain/usecases/auth/signout_usecase.dart';
 import 'package:expenses_manager/domain/usecases/transactions/get_filtered_transactions_usecase.dart';
 import 'package:expenses_manager/domain/usecases/transactions/get_last_transactions_usecase.dart';
 import 'package:expenses_manager/utils/transaction_type.dart';
 import 'package:expenses_manager/utils/ui_state.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:meta/meta.dart';
 
 part 'home_event.dart';
@@ -24,14 +25,15 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           monthIncome: 1000,
           monthExpenses: 500,
           lastMovements: [],
+          user: false
         ),
       ) {
     on<HomeEvent>((event, emit) {
-      // TODO: implement event handler
     });
 
     on<LoadLastMovementsEvent>((event, emit) async {
       emit(state.copyWith(uiState: UIState.loading()));
+      final firebaseUser = FirebaseAuth.instance.currentUser;
       //final result = await getLastMovementsUsecase.call(null); // todo ver si es mejor quitar null
       final result = await getFilteredTransactionsUsecase.callRaw(FilterTransactionsParams(date: 'month'));
 
@@ -52,6 +54,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
               lastMovements: transactions.length > 3 ? transactions.sublist(transactions.length - 3) : List.from(transactions),
               monthExpenses: expense,
               monthIncome: income,
+              user: firebaseUser != null
             ),
           );
         },
@@ -59,7 +62,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     });
 
     on<SignOutEvent>((event, emit) {
+      emit(state.copyWith(uiState: UIState.loading()));
       singOutUsecase.call(null);
+      emit(state.copyWith(uiState: UIState.success(), user: false));
     });
   }
 }

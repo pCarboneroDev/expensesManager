@@ -1,0 +1,542 @@
+import 'package:dartz/dartz.dart';
+import 'package:expenses_manager/data/database/sqlite_handler.dart';
+import 'package:expenses_manager/data/entities/category_entity.dart';
+import 'package:expenses_manager/data/entities/task_entity.dart';
+import 'package:expenses_manager/data/entities/transaction_entity.dart';
+import 'package:expenses_manager/domain/exceptions/failure.dart';
+import 'package:expenses_manager/domain/models/category_model.dart';
+import 'package:expenses_manager/domain/models/transaction_model.dart';
+import 'package:expenses_manager/utils/operation_type.dart';
+import 'package:expenses_manager/utils/sync_status.dart';
+import 'package:expenses_manager/utils/transaction_type.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:uuid/uuid.dart';
+
+class LocalDatasource {
+  final SqliteHandler handler;
+  Database? _db;
+  final uuid = Uuid();
+
+  LocalDatasource({required this.handler});
+
+  get where => null;
+
+  Future<void> init() async {
+    _db = await handler.getDb();
+  }
+
+  // Future<Database> openDatabaseFromAssets() async {
+  //   // Get the temporary directory (cache)
+  //   final directory = await getTemporaryDirectory();
+  //   final path = join(directory.path, 'mi_app.db');
+
+  //   // Check if the database file exists
+  //   final exists = await File(path).exists();
+
+  //   if (!exists) {
+  //     // Copy from assets
+  //     ByteData data = await rootBundle.load('assets/db/mi_app.db');
+  //     List<int> bytes = data.buffer.asUint8List(
+  //       data.offsetInBytes,
+  //       data.lengthInBytes,
+  //     );
+
+  //     // Write and flush the bytes written
+  //     await File(path).writeAsBytes(bytes, flush: true);
+  //   }
+
+  //   // Open the database
+  //   return await openDatabase(path);
+  // }
+
+  Future<Either<Failure, List<CategoryModel>>> getAllCategories() async {
+    try {
+      final response = await _db?.query("categories");
+
+      if (response == null || response.isEmpty) {
+        return Left(DataSourceException("No categories found"));
+      }
+
+      final List<CategoryModel> categories = response.map((row) {
+        return CategoryEntity.fromMap(row).toModel();
+      }).toList();
+
+      return Right(categories);
+    } catch (error) {
+      return Left(DataSourceException(error.toString()));
+    }
+  }
+
+  Future<Either<Failure, List<TransactionModel>>> getFilteredTransactions({
+    int? skip,
+    int? limit,
+    String? categoryId,
+    String date = 'month',
+  }) async {
+    try {
+      List<Map<String, Object?>>? response;
+      final dateLower = date.toLowerCase();
+
+      String query =
+          '''SELECT t.*, c.name as category_name FROM transactions t LEFT JOIN categories c ON t.id_category = c.id''';
+
+      List<String> args = [];
+
+      if (dateLower == 'month') {
+        final currentMonth = DateTime.now().month.toString().padLeft(2, '0');
+        query += ''' WHERE strftime('%m', t.date) = ?''';
+        args.add(currentMonth);
+      } else if (dateLower == 'year') {
+        final currentYear = DateTime.now().year.toString();
+        query += ''' WHERE strftime('%Y', t.date) = ?''';
+        args.add(currentYear);
+      } else if (dateLower == 'week') {
+        final (startOfWeek, endOfWeek) = _getCurrentWeekRange();
+
+        query += ''' WHERE t.date <= ? AND t.date >= ?''';
+
+        args.add(endOfWeek.toString());
+        args.add(startOfWeek.toString());
+      }
+
+      // if(dateLower != 'week'){
+      //   final query = '''
+      //     SELECT t.*, c.name as category_name
+      //     FROM transactions t
+      //     LEFT JOIN categories c ON t.id_category = c.id
+      //   ''';
+      //   response = await _db?.rawQuery(query);
+      // }
+      if (categoryId != null && categoryId.isNotEmpty) {
+        query += " AND id_category = ? ORDER BY t.date";
+        args.add(categoryId.toString());
+      }
+
+      response = await _db?.rawQuery(query, args);
+
+      if (response == null) {
+        return Right([]);
+      }
+
+      final List<TransactionModel> transactions = response.map((row) {
+        return TransactionEntity(
+          id: row['id'] as String,
+          date: DateTime.parse(row['date'] as String),
+          userId: "",
+          amount: row['amount'] as double,
+          category: CategoryEntity(
+            id: row['id_category'] as String,
+            name: row['category_name'] as String,
+          ),
+          type: TransactionType.fromString(row['transaction_type'] as String),
+        ).toModel();
+      }).toList();
+
+      return Right(transactions);
+    } catch (error) {
+      return Left(DataSourceException(error.toString()));
+    }
+  }
+
+  Future<Either<Failure, TransactionModel>> getTransactionId(String id) async {
+    try {
+      String query =
+          '''SELECT t.*, c.name as category_name FROM transactions t LEFT JOIN categories c ON t.id_category = c.id WHERE t.id = ?''';
+
+      final response = await _db!.rawQuery(query, [id]);
+
+      final TransactionModel transaction = response.map((row) {
+        return TransactionEntity(
+          id: row['id'] as String,
+          date: DateTime.parse(row['date'] as String),
+          userId: "",
+          amount: row['amount'] as double,
+          category: CategoryEntity(
+            id: row['id_category'] as String,
+            name: row['category_name'] as String,
+          ),
+          type: TransactionType.fromString(row['transaction_type'] as String),
+        ).toModel();
+      }).toList()[0];
+
+      return Right(transaction);
+    } catch (error) {
+      return Left(DataSourceException(error.toString()));
+    }
+  }
+
+  Future<Either<Failure, TransactionModel>> createTransaction(
+    TransactionModel newTransaction,
+  ) async {
+    try {
+      final generatedUuid = uuid.v7();
+
+      final response = await _db?.insert('transactions', {
+        'id': generatedUuid,
+        'date': newTransaction.date.toString(),
+        'amount': newTransaction.amount,
+        'id_category': newTransaction.category.id,
+        'transaction_type': newTransaction.type.name,
+      });
+
+      if (response == null) {
+        return Left(DataSourceException("Error: response is null"));
+      }
+
+      if (response > 0) {
+        return Right(
+          TransactionModel(
+            id: generatedUuid,
+            date: newTransaction.date,
+            amount: newTransaction.amount,
+            category: newTransaction.category,
+            type: newTransaction.type,
+          ),
+        );
+      } else {
+        return Left(DataSourceException("Error: response is 0"));
+      }
+    } catch (error) {
+      return Left(DataSourceException(error.toString()));
+    }
+  }
+
+  Future<Either<Failure, bool>> deleteTransaction(String transactionId) async {
+    try {
+      final response = await _db?.delete(
+        "transactions",
+        where: 'id = ?',
+        whereArgs: [transactionId],
+      );
+
+      if (response == null || response <= 0) {
+        return Left(DataSourceException("ERROR: response is null or 0"));
+      }
+      return Right(true);
+    } catch (error) {
+      return Left(DataSourceException(error.toString()));
+    }
+  }
+
+  Future<Either<Failure, TransactionModel>> updateTransaction(
+    String transactionId,
+    TransactionModel transaction,
+  ) async {
+    try {
+      final response = await _db?.update(
+        'transactions',
+        {
+          'date': transaction.date.toString(),
+          'amount': transaction.amount,
+          'id_category': transaction.category.id,
+          'transaction_type': transaction.type.name,
+        },
+        where: 'id = ?',
+        whereArgs: [transactionId],
+      );
+
+      if (response == null || response <= 0) {
+        return Left(DataSourceException("ERROR: response is null or 0"));
+      }
+      return Right(transaction);
+    } catch (error) {
+      return Left(DataSourceException(error.toString()));
+    }
+  }
+
+  Future<Either<Failure, int>> insertTransactionList(List<TransactionModel> list) async {
+    if (list.isEmpty) {
+      return const Right(0);
+    }
+
+    try {
+      // Get all existing IDs in one query for efficiency
+      final ids = list.map((e) => e.id).toList();
+      final placeholders = List.filled(ids.length, '?').join(',');
+
+      final existingTransactions = await _db!.query(
+        "transactions",
+        where: 'id IN ($placeholders)',
+        whereArgs: ids,
+      );
+
+      final existingIds = existingTransactions
+          .map((row) => row['id'] as String)
+          .toSet();
+
+      // Filter transactions that don't exist yet
+      final newTransactions = list
+          .where((e) => !existingIds.contains(e.id))
+          .toList();
+
+      if (newTransactions.isEmpty) {
+        return const Right(0); // Nothing new to insert
+      }
+
+      // Batch insert for better performance
+      final batch = _db!.batch();
+      for (final transaction in newTransactions) {
+        batch.insert('transactions', transaction.toMap());
+      }
+
+      await batch.commit(continueOnError: false);
+
+      return Right(newTransactions.length);
+    } catch (error) {
+      return Left(DataSourceException('Failed to insert transactions: $error'));
+    }
+  }
+
+  Future<Either<Failure, bool>> createTask(TaskEntity newTask) async {
+    try {
+      final response = await _db?.insert('tasks', {
+        'entityType': newTask.entityType,
+        'entityId': newTask.entityId,
+        'operation': newTask.operation.name,
+        'payload': newTask.payload,
+        'createdAt': newTask.createdAt.toString(),
+        'attempts': newTask.attempts,
+        'status': newTask.status.name,
+      });
+
+      if (response == null) {
+        return Left(DataSourceException("ERROR: response is null or 0"));
+      }
+      return Right(true);
+    } catch (error) {
+      return Left(DataSourceException(error.toString()));
+    }
+  }
+
+  // Future<Either<Failure, bool>> syncAllTransactions() async {
+  //   try {
+  //     final transactionsResponse = await _db!.query('transactions');
+
+  //     transactionsResponse.map(
+  //       (row) async {
+  //         final t = TransactionModel(
+  //           id: row['id'] as String,
+  //           date: DateTime.parse(row['date'] as String),
+  //           amount: row['amount'] as double,
+  //           category: CategoryModel.empty(),
+  //           type: TransactionType.values.firstWhere((e) => e.name == row['transaction_type'] as String),
+  //         );
+
+  //         final insert = await _db!.insert(
+  //           "tasks",
+  //           {
+  //             'entityType': 'transaction',
+  //             'entityId': t.id,
+  //             'operation': OperationType.create,
+  //             'payload': null,
+  //             'createdAt': DateTime.now(),
+  //             'attempts': 0,
+  //             'status': SyncStatus.pending
+  //           }
+  //         );
+  //       }
+  //     );
+
+  //     return Right(true);
+  //   } catch (error) {
+  //     return Left(DataSourceException(error.toString()));
+  //   }
+  // }
+
+  Future<Either<Failure, bool>> syncAllTransactions() async {
+    try {
+      final transactionsResponse = await _db!.query('transactions');
+
+      if (transactionsResponse.isEmpty) {
+        return Right(true); // Nothing to sync
+      }
+
+      // Use Future.wait to properly await all async operations
+      await Future.wait(
+        transactionsResponse.map((row) async {
+          // Safely extract values with null checks
+          final id = row['id'] as String?;
+          final dateStr = row['date'] as String?;
+          final amount = row['amount'] as double?;
+          final transactionType = row['transaction_type'] as String?;
+
+          if (id == null ||
+              dateStr == null ||
+              amount == null ||
+              transactionType == null) {
+            throw Exception(
+              'Invalid transaction data: missing required fields',
+            );
+          }
+
+          final t = TransactionModel(
+            id: id,
+            date: DateTime.parse(dateStr),
+            amount: amount,
+            category: await _getCategoryForTransaction(
+              row,
+            ), // Fetch actual category
+            type: TransactionType.values.firstWhere(
+              (e) => e.name == transactionType,
+              orElse: () =>
+                  throw Exception('Invalid transaction type: $transactionType'),
+            ),
+          );
+
+          // Check if task already exists to avoid duplicates
+          final existingTask = await _db!.query(
+            "tasks",
+            where: 'entityType = ? AND entityId = ?',
+            whereArgs: ['transaction', t.id],
+          );
+
+          if (existingTask.isEmpty) {
+            await _db!.insert("tasks", {
+              'entityType': 'transaction',
+              'entityId': t.id,
+              'operation':
+                  OperationType.create.name, // Use .name if it's an enum
+              'payload': null,
+              'createdAt': DateTime.now().toIso8601String(),
+              'attempts': 0,
+              'status': SyncStatus.pending.name, // Use .name if it's an enum
+            });
+          }
+        }),
+      );
+
+      return Right(true);
+    } catch (error) {
+      return Left(DataSourceException(error.toString()));
+    }
+  }
+
+  // Helper method to get actual category
+  Future<CategoryModel> _getCategoryForTransaction(
+    Map<String, dynamic> row,
+  ) async {
+    final categoryId = row['category_id'] as String?;
+    if (categoryId == null) return CategoryModel.empty();
+
+    final result = await _db!.query(
+      'categories',
+      where: 'id = ?',
+      whereArgs: [categoryId],
+    );
+    if (result.isEmpty) return CategoryModel.empty();
+
+    // Parse and return actual category
+    return CategoryEntity.fromMap(result.first).toModel();
+  }
+
+  Future<Either<Failure, List<TaskEntity>>> getPendingTasks() async {
+    try {
+      final response = await _db?.query(
+        'tasks',
+        where: 'status = ?',
+        whereArgs: [SyncStatus.pending.name],
+      );
+
+      if (response == null) {
+        return Left(DataSourceException("ERROR: response is null or 0"));
+      }
+
+      List<TaskEntity> tasks = response.map((row) {
+        return TaskEntity(
+          entityType: row['entityType'] as String,
+          entityId: row['entityId'] as String,
+          operation: OperationType.values.firstWhere(
+            (e) => e.name == row['operation'] as String,
+          ),
+          createdAt: DateTime.parse(row['createdAt'] as String),
+          attempts: row['attempts'] as int,
+          status: SyncStatus.values.firstWhere(
+            (e) => e.name == row['status'] as String,
+          ),
+        );
+      }).toList();
+
+      return Right(tasks);
+    } catch (error) {
+      return Left(DataSourceException(error.toString()));
+    }
+  }
+
+    Future<Either<Failure, List<TaskEntity>>> getFailedTasks() async {
+    try {
+      final response = await _db?.query(
+        'tasks',
+        where: 'status = ?',
+        whereArgs: [SyncStatus.failed.name],
+      );
+
+      if (response == null) {
+        return Left(DataSourceException("ERROR: response is null or 0"));
+      }
+
+      List<TaskEntity> tasks = response.map((row) {
+        return TaskEntity(
+          entityType: row['entityType'] as String,
+          entityId: row['entityId'] as String,
+          operation: OperationType.values.firstWhere(
+            (e) => e.name == row['operation'] as String,
+          ),
+          createdAt: DateTime.parse(row['createdAt'] as String),
+          attempts: row['attempts'] as int,
+          status: SyncStatus.values.firstWhere(
+            (e) => e.name == row['status'] as String,
+          ),
+        );
+      }).toList();
+
+      return Right(tasks);
+    } catch (error) {
+      return Left(DataSourceException(error.toString()));
+    }
+  }
+
+  void setTaskStatus(SyncStatus newStatus, String id) async {
+    try {
+      _db?.update(
+        "tasks",
+        {"status": newStatus.name},
+        where: "entityId = ?",
+        whereArgs: [id],
+      );
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  (DateTime startOfWeek, DateTime endOfWeek) _getCurrentWeekRange() {
+    final now = DateTime.now();
+    final weekday = now.weekday;
+
+    // Calcular el Lunes de la semana actual
+    // weekday: 1 = Lunes, 7 = Domingo
+    final startOfWeek = now.subtract(Duration(days: weekday - 1));
+
+    // Ajustar para que empiece a las 00:00:00
+    final startOfDay = DateTime(
+      startOfWeek.year,
+      startOfWeek.month,
+      startOfWeek.day,
+    );
+
+    // Calcular el Domingo (Lunes + 6 días)
+    final endOfWeek = startOfDay.add(const Duration(days: 6));
+
+    // Ajustar para que termine a las 23:59:59.999
+    final endOfDay = DateTime(
+      endOfWeek.year,
+      endOfWeek.month,
+      endOfWeek.day,
+      23,
+      59,
+      59,
+      999,
+    );
+
+    return (startOfDay, endOfDay);
+  }
+}

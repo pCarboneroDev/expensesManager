@@ -1,10 +1,11 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:expenses_manager/domain/models/category_model.dart';
-import 'package:expenses_manager/domain/models/movement_model.dart';
+import 'package:expenses_manager/domain/models/transaction_model.dart';
 import 'package:expenses_manager/domain/models/params/update_params.dart';
 import 'package:expenses_manager/domain/usecases/categories/get_categories_usecase.dart';
 import 'package:expenses_manager/domain/usecases/transactions/update_transaction_usecase.dart';
+import 'package:expenses_manager/utils/operation_state.dart';
 import 'package:expenses_manager/utils/transaction_type.dart';
 import 'package:expenses_manager/utils/ui_state.dart';
 import 'package:flutter/material.dart';
@@ -25,10 +26,11 @@ class UpdateTransactionBloc extends Bloc<UpdateTransactionEvent, UpdateTransacti
           newTransaction: TransactionModel.empty(),
           amount: 0,
           date: DateTime.now(),
-          category: CategoryModel(id: 0, name: "", icon: Icons.restaurant),
+          category: CategoryModel(id: "", name: "", icon: Icons.restaurant),
           type: TransactionType.expense,
           categories: [],
-          transactionId: 0
+          transactionId: "",
+          operationState: OperationState.idle
         ),
       ) {
     on<UpdateTransactionEvent>((event, emit) {
@@ -67,13 +69,21 @@ class UpdateTransactionBloc extends Bloc<UpdateTransactionEvent, UpdateTransacti
     });
 
     on<UpdateTransaction>((event, emit) async {
-     emit(state.copyWith(uiState: UIState.loading()));
+     emit(state.copyWith(operationState: OperationState.loading));
 
-      final result = await updateTransactionUsecase.call(UpdateParams(transactionId: state.transactionId, transaction: event.transaction));
+      final result = await updateTransactionUsecase.call(UpdateParams(
+        transactionId: state.transactionId, 
+        transaction: TransactionModel( //TODO Creo que esto hay que hacerlo así porque al cambiar los id a uids ahora hay que mandar todo con id incluido creo
+          id: state.transactionId, 
+          date: event.transaction.date, 
+          amount: event.transaction.amount, 
+          category: event.transaction.category, 
+          type: event.transaction.type)
+        ));
 
       result.fold(
-        (fail) => emit(state.copyWith(uiState: UIState.error(fail.message))),
-        (categories) => emit(state.copyWith(uiState: UIState.success()))
+        (fail) => emit(state.copyWith(operationState: OperationState.failure)),
+        (categories) => emit(state.copyWith(operationState: OperationState.success))
       );
     });
   }

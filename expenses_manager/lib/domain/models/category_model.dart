@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class CategoryModel {
-  final int id;
+  final String id;
   final String name;
   final IconData icon;
 
@@ -9,7 +9,7 @@ class CategoryModel {
 
   factory CategoryModel.empty() {
     return CategoryModel(
-      id: 0,
+      id: "",
       name: "",
       icon: Icons.abc
     );

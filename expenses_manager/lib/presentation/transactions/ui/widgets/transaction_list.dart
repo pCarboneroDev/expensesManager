@@ -1,4 +1,4 @@
-import 'package:expenses_manager/domain/models/movement_model.dart';
+import 'package:expenses_manager/domain/models/transaction_model.dart';
 import 'package:expenses_manager/presentation/transactions/ui/widgets/date_label.dart';
 import 'package:expenses_manager/presentation/transactions/ui/widgets/delete_modal.dart';
 import 'package:expenses_manager/presentation/transactions/ui/widgets/transaction_card.dart';
@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 class TransactionList extends StatelessWidget {
   final Map<DateTime, List<TransactionModel>> transactionList;
-  final void Function(int) deleteTransaction;
+  final void Function(String) deleteTransaction;
   final Function load;
   
   const TransactionList({super.key, required this.transactionList, required this.deleteTransaction, required this.load});
