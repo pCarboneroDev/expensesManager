@@ -15,7 +15,7 @@ class RemoteDatasource {
   // ip pc: 'http://192.168.1.250:8000/' 
   final dio = Dio(
     BaseOptions(
-      baseUrl: 'http://192.168.1.250:8000/',
+      baseUrl: 'http://192.168.1.250:8000/', // Change this to your pc ip address
       connectTimeout: const Duration(seconds: 5),
       receiveTimeout: const Duration(seconds: 3),
       headers: {
