@@ -7,6 +7,7 @@ import 'package:expenses_manager/presentation/insights/bloc/insights_bloc.dart';
 import 'package:expenses_manager/presentation/login/bloc/login_bloc.dart';
 import 'package:expenses_manager/presentation/login/ui/screens/login_screen.dart';
 import 'package:expenses_manager/presentation/login/ui/screens/register_screen.dart';
+import 'package:expenses_manager/presentation/splash/bloc/splash_bloc.dart';
 import 'package:expenses_manager/presentation/splash/splash_screen.dart';
 import 'package:expenses_manager/presentation/transactions/bloc/transaction_bloc.dart';
 import 'package:expenses_manager/presentation/transactions/ui/transactions_screen.dart';
@@ -31,10 +32,10 @@ void main() async {
   // final themeStr = await rootBundle.loadString('assets/appainter_theme.json');
   // final themeJson = jsonDecode(themeStr);
   // final theme = ThemeDecoder.decodeThemeData(themeJson)!;
-
   runApp(
     MultiBlocProvider(
       providers: [
+        BlocProvider(create: (context) => getIt<SplashBloc>()),
         BlocProvider(create: (context) => getIt<HomeBloc>()),
         BlocProvider(create: (context) => getIt<TransactionBloc>()),
         BlocProvider(create: (context) => getIt<CreateTransactionBloc>()),

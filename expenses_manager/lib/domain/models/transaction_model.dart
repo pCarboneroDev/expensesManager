@@ -11,6 +11,14 @@ class TransactionModel{
 
   const TransactionModel({required this.id, required this.date, required this.amount, required this.category, required this.type});
 
+  Map<String, dynamic> toMap() => {
+    "id": id,
+    "date": date.toString(),
+    "amount": amount,
+    "id_category": category.id,
+    "transaction_type": type.name,
+  };
+
   factory TransactionModel.empty() {
     return TransactionModel(
       id: "",

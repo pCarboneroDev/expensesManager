@@ -1,7 +1,7 @@
 import 'package:expenses_manager/domain/models/category_model.dart';
 import 'package:expenses_manager/domain/models/transaction_model.dart';
 import 'package:expenses_manager/presentation/create_transaction/bloc/create_transaction_bloc.dart';
-import 'package:expenses_manager/presentation/widgets/transaction_form/CreateTransactionForm.dart';
+import 'package:expenses_manager/presentation/widgets/transaction_form/create_transaction_form.dart';
 import 'package:expenses_manager/utils/operation_state.dart';
 import 'package:expenses_manager/utils/transaction_type.dart';
 import 'package:expenses_manager/utils/ui_state.dart';

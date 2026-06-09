@@ -6,7 +6,6 @@ class SyncNotifier {
   Stream<String> get stream => _controller.stream;
 
   void notifyTableChanged(String table) {
-    print("1HOLAAAAAAAAAAAAAAAAAAAAAAA");
     _controller.add(table);
   }
 

@@ -1,10 +1,19 @@
 part of 'splash_bloc.dart';
 
-sealed class SplashState extends Equatable {
-  const SplashState();
+class SplashState extends Equatable {
+  final UIState uiState;
+
+  const SplashState({required this.uiState});
+
+  SplashState copyWith({UIState? uiState}) {
+    return SplashState(
+      uiState: uiState ?? this.uiState,
+    );
+  }
   
   @override
-  List<Object> get props => [];
+  List<Object> get props => [ uiState ];
 }
 
-final class SplashInitial extends SplashState {}
+
+

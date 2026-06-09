@@ -1,11 +1,16 @@
 import 'dart:async';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:dartz/dartz.dart';
 import 'package:expenses_manager/data/datatasources/local_datasource.dart';
 import 'package:expenses_manager/data/datatasources/remote_datasource.dart';
 import 'package:expenses_manager/data/entities/task_entity.dart';
 import 'package:expenses_manager/data/sync/sync_notifier.dart';
+import 'package:expenses_manager/domain/exceptions/failure.dart';
 import 'package:expenses_manager/utils/operation_type.dart';
 import 'package:expenses_manager/utils/sync_status.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 class SyncManager {
   final SyncNotifier notifier;
@@ -24,8 +29,15 @@ class SyncManager {
   void start() {
     _subscription = notifier.stream.listen((table) async {
       if (table == 'tasks') {
-        //todo comprobar conexión a internet y gestionar fails
-        await syncTasks();
+        //todo gestionar fails
+        
+
+        final internet = await hasInternetAccess();
+        final user = FirebaseAuth.instance.currentUser;
+
+        if (internet && user != null) {
+          await syncTasks();
+        }
       }
     });
   }
@@ -33,11 +45,32 @@ class SyncManager {
   Future<void> syncTasks() async {
     final result = await source.getPendingTasks();
 
-    result.fold((l) => {print("No se algún error owo")}, (r) async {
-      for (final task in r) {
-        await uploadTask(task);
+    result.fold(
+      (l) => {
+        print("No se algún error owo")}, 
+      (r) async {
+        for (final task in r) {
+          await uploadTask(task);
+        }
       }
-    });
+    );
+  }
+
+  Future<Either<Failure, bool>> syncLocal() async {
+    try{
+      final remoteResult = await remote.getFilteredTransactions(date: 'all');
+    
+      remoteResult.fold(
+        (l) => throw DataSourceException("message"),
+        (r) {
+          source.insertTransactionList(r);
+        },
+      );
+      return Right(true);
+    }
+    catch(e){
+      return Left(DataSourceException("message"));
+    }
   }
 
   // Future<void> uploadTask(TaskEntity task) async {
@@ -82,8 +115,6 @@ class SyncManager {
 
     await localResponse.fold(
       (failure) async {
-        // Manejar error de forma más específica
-        print("Error obteniendo transacción local: $failure");
         source.setTaskStatus(SyncStatus.failed, task.entityId);
       },
       (transaction) async {
@@ -104,6 +135,21 @@ class SyncManager {
         source.setTaskStatus(status, task.entityId);
       },
     );
+  }
+
+  Future<bool> hasInternetAccess() async {
+    // 1. Verificar si hay una red disponible (WiFi, datos, etc.)
+    final connectivityResult = await Connectivity().checkConnectivity();
+    
+    if (connectivityResult.contains(ConnectivityResult.none)) {
+      // No está conectado a ninguna red
+      return false;
+    }
+
+    // 2. Hay una red, ahora comprobamos si tiene acceso real a internet
+    //    internet_connection_checker suele ser más fiable que hacer un simple GET.
+    final bool isConnected = await InternetConnectionChecker().hasConnection;
+    return isConnected;
   }
 
   void dispose() {

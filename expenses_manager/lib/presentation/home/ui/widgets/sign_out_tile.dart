@@ -19,6 +19,7 @@ class SignOutTile extends StatelessWidget {
         color: ColorScheme.of(context).onError,
       ),
       onTap: () {
+        
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -27,13 +28,13 @@ class SignOutTile extends StatelessWidget {
               content: const Text('Are you sure you want to sign out?'),
               actions: [
                 TextButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () => Navigator.pop(context), //offline@test.com
                   child: const Text('Cancel'),
                 ),
                 TextButton(
                   onPressed: () {
                     signOut();
-                    //Navigator.pushReplacementNamed(context, 'login');
+                    Navigator.pop(context);
                   },
                   style: TextButton.styleFrom(
                     foregroundColor: ColorScheme.of(context).errorContainer,

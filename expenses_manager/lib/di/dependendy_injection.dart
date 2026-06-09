@@ -30,6 +30,7 @@ import 'package:expenses_manager/presentation/create_transaction/bloc/create_tra
 import 'package:expenses_manager/presentation/home/bloc/home_bloc.dart';
 import 'package:expenses_manager/presentation/insights/bloc/insights_bloc.dart';
 import 'package:expenses_manager/presentation/login/bloc/login_bloc.dart';
+import 'package:expenses_manager/presentation/splash/bloc/splash_bloc.dart';
 import 'package:expenses_manager/presentation/transactions/bloc/transaction_bloc.dart';
 import 'package:expenses_manager/presentation/update_transaction/bloc/update_transaction_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -59,12 +60,13 @@ Future<void> initGetIt() async {
     manager.start();
     return manager;
   });
+  await getIt.isReady<SyncManager>();
 
   // repositories
   getIt.registerSingleton<TransactionsRepository>(TransactionsRepositoryImpl(getIt(), getIt(), getIt()));
   getIt.registerSingleton<CategoriesRepository>(CategoriesRepositoryImpl(getIt(), getIt()));
-  getIt.registerSingleton<FirebaseAuthRepository>(FirebaseAuthRepositoryImpl(service: getIt(), datasource: getIt()));
-  getIt.registerSingleton<UsersRepository>(UsersRepositoryImpl(remoteDatasource: getIt()));
+  getIt.registerSingleton<FirebaseAuthRepository>(FirebaseAuthRepositoryImpl(service: getIt(), datasource: getIt(), localDatasource: getIt(), notifier: getIt(), manager: getIt()));
+  getIt.registerSingleton<UsersRepository>(UsersRepositoryImpl(remoteDatasource: getIt(), notifier: getIt()));
   getIt.registerSingleton<PredictionRepository>(PredictionRepositoryImpl(getIt()));
 
   // usecases
@@ -93,6 +95,7 @@ Future<void> initGetIt() async {
 
 
   // blocs
+  getIt.registerSingleton(SplashBloc(getIt(), getIt(), getIt()));
   getIt.registerSingleton(HomeBloc(getIt(), getIt(), getIt()));
   getIt.registerSingleton(TransactionBloc(getIt(), getIt(), getIt(), getIt()));
   getIt.registerSingleton(CreateTransactionBloc(getIt(), getIt()));

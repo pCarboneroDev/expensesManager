@@ -9,7 +9,6 @@ import 'package:expenses_manager/domain/models/params/filter_transactions_params
 import 'package:expenses_manager/domain/repositories/transactions_repository.dart';
 import 'package:expenses_manager/utils/operation_type.dart';
 import 'package:expenses_manager/utils/sync_status.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class TransactionsRepositoryImpl implements TransactionsRepository{
   final RemoteDatasource remoteDatasource;
@@ -31,11 +30,11 @@ class TransactionsRepositoryImpl implements TransactionsRepository{
   @override
   Future<Either<Failure, TransactionModel>> createTransaction(TransactionModel transaction) async {
     // return await remoteDatasource.createTransaction(transaction);
-    final User? user = FirebaseAuth.instance.currentUser;
+    // final User? user = FirebaseAuth.instance.currentUser;
 
     final result = await localDatasource.createTransaction(transaction);
 
-    if(user != null && result.isRight()) {
+    if(result.isRight()) {
       await localDatasource.createTask(
         TaskEntity( 
           entityType: "transaction",
@@ -56,11 +55,11 @@ class TransactionsRepositoryImpl implements TransactionsRepository{
   
   @override
   Future<Either<Failure, bool>> deleteTransaction(String transactionId) async {
-    final User? user = FirebaseAuth.instance.currentUser;
+    // final User? user = FirebaseAuth.instance.currentUser;
 
     final result = await localDatasource.deleteTransaction(transactionId);
 
-    if(user != null && result.isRight()) {
+    if(result.isRight()) {
       await localDatasource.createTask(
         TaskEntity( 
           entityType: "transaction",
@@ -80,11 +79,11 @@ class TransactionsRepositoryImpl implements TransactionsRepository{
   
   @override
   Future<Either<Failure, TransactionModel>> updateTransaction(String transactionId, TransactionModel transaction) async {
-    final User? user = FirebaseAuth.instance.currentUser;
+    // final User? user = FirebaseAuth.instance.currentUser;
 
     final result = await localDatasource.updateTransaction(transactionId, transaction);
 
-    if(user != null && result.isRight()) {
+    if(result.isRight()) {
       await localDatasource.createTask(
         TaskEntity( 
           entityType: "transaction",

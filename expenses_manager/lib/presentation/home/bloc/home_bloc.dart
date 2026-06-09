@@ -29,7 +29,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         ),
       ) {
     on<HomeEvent>((event, emit) {
-      // TODO: implement event handler
     });
 
     on<LoadLastMovementsEvent>((event, emit) async {
@@ -63,7 +62,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     });
 
     on<SignOutEvent>((event, emit) {
+      emit(state.copyWith(uiState: UIState.loading()));
       singOutUsecase.call(null);
+      emit(state.copyWith(uiState: UIState.success(), user: false));
     });
   }
 }

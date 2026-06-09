@@ -6,7 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 class MovementHome extends StatelessWidget {
   final TransactionModel movement;
 
-  const MovementHome({required this.movement});
+  const MovementHome({super.key, required this.movement});
 
   @override
   Widget build(BuildContext context) {
