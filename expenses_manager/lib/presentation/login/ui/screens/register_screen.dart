@@ -139,7 +139,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         );
                       }
                       if (state.uistate.status == UIStatus.success) {
-                        Navigator.pushReplacementNamed(context, 'root');
+                        Navigator.pushNamedAndRemoveUntil(context, 'root', (route) => false);
                       }
                     },
                     child: BlocBuilder<LoginBloc, LoginState>(

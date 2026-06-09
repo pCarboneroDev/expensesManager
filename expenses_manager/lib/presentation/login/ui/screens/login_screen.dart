@@ -94,7 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         );
                       }
                       if (state.uistate.status == UIStatus.success) {
-                        Navigator.pushReplacementNamed(context, 'root');
+                        Navigator.pushNamedAndRemoveUntil(context, 'root', (route) => false);
                       }
                     },
                     child: BlocBuilder<LoginBloc, LoginState>(

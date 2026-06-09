@@ -11,10 +11,11 @@ import 'package:expenses_manager/domain/models/transaction_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class RemoteDatasource {
-  final String baseUrl = 'http://10.0.2.2:8000/';
+  // localhost android: 'http://10.0.2.2:8000/';
+  // ip pc: 'http://192.168.1.250:8000/' 
   final dio = Dio(
     BaseOptions(
-      baseUrl: 'http://10.0.2.2:8000/',
+      baseUrl: 'http://192.168.1.250:8000/',
       connectTimeout: const Duration(seconds: 5),
       receiveTimeout: const Duration(seconds: 3),
       headers: {
