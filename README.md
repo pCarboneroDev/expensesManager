@@ -4,6 +4,7 @@
 # Expenses Manager
 
 Expenses Manager is a personal expense and income tracking application. Currently in active development.
+See the backend: https://github.com/pCarboneroDev/expensesManager_backend
 
 ## 🚧 Project Status
 
